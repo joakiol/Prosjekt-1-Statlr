@@ -10,3 +10,5 @@ x = rnorm(n = n, mean = 0, sd = 1)
 q=ggplot(data.frame(x=x),aes(x))+geom_histogram()
 q
 X = 2
+k=500
+
