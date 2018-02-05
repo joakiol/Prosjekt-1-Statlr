@@ -9,4 +9,4 @@ n = 10000
 x = rnorm(n = n, mean = 0, sd = 1)
 q=ggplot(data.frame(x=x),aes(x))+geom_histogram()
 q
-X = 5
+X = 2
