@@ -1,0 +1,45 @@
+---
+title: "StatLr-P1-O3"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Oppgave 3A)
+We want to show that $logit(p_i) = log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i = \frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}$. Thus, we get:
+\begin{equation}
+log \Bigg(\frac{\frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}}{1-\frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}} \Bigg)= log \Bigg(\frac{\frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}}{\frac{1}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}} \Bigg) = log \Bigg(e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}} \Bigg) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}
+\end{equation}
+
+```{r first}
+library(ggplot2)
+library(GGally)
+library(class)
+library(MASS)
+library(pROC)
+wine=read.csv("https://www.math.ntnu.no/emner/TMA4268/2018v/data/Comp1Wine.csv",sep=" ")
+wine$class=as.factor(wine$class-1)
+colnames(wine)=c("y","x1","x2")
+ggpairs(wine, ggplot2::aes(color=y))
+n=dim(wine)[1]
+set.seed(4268) #to get the same order if you rerun - but you change this to your favorite number
+ord = sample(1:n) #shuffle 
+test = wine[ord[1:(n/2)],]
+train = wine[ord[((n/2)+1):n],]
+print(test)
+
+fit = glm(y ~ ., data = train, family = "binomial")
+coef(fit)
+```
+
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
