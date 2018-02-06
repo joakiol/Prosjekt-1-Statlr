@@ -12,9 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Oppgave 3A)
 We want to show that $logit(p_i) = log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i = \frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}$. Thus, we get:
 \begin{equation}
-log \Bigg(\frac{\frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}}{1-\frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}} \Bigg)= log \Bigg(\frac{\frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}}{\frac{1}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}} \Bigg) = log \Bigg(e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}} \Bigg) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}
+log \Bigg(\frac{\frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}}{1-\frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}} \Bigg)= log \Bigg(\frac{\frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}}{\frac{1}{1+e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}} \Bigg) = log \Bigg(e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}} \Bigg) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}.
 \end{equation}
-
+And we get $log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, which is a linear function.
 ```{r first}
 library(ggplot2)
 library(GGally)
