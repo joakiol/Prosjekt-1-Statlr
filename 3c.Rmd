@@ -105,23 +105,28 @@ mean0=c(mean(train[train$y==0, "x1"]), mean(train[train$y==0, "x2"]))
 mean1=c(mean(train[train$y==1, "x1"]), mean(train[train$y==1, "x2"]))
 cov0=matrix(0,2,2)
 cov1=matrix(0,2,2)
-a=(train[[2]][4] - mean0[1])*(train[[2]][4] - mean0[1])
 for (i in 1:(n/2)){
   if (train[i, 1]==0){
-    cov0[1, 1]=cov0[1, 1] + (train[i, 2] - mean0[1])*(train[i, 2] - mean0[1])
-    cov0[1, 2]=cov0[1, 2] + (train[i, 3] - mean0[2])*(train[i, 2] - mean0[1])
-    cov0[2, 1]=cov0[2, 1] + (train[i, 3] - mean0[2])*(train[i, 2] - mean0[1])
-    cov0[2, 2]=cov0[2, 2] + (train[i, 3] - mean0[2])*(train[i, 3] - mean0[2])
+    x=c(train[i, 2], train[i, 3])
+    cov0 = cov0 + (x-mean0) %*% t(x-mean0)
   }else{
-    cov1[1, 1]=cov1[1, 1] + (train[i, 2] - mean1[1])*(train[i, 2] - mean1[1])
-    cov1[1, 2]=cov1[1, 2] + (train[i, 3] - mean1[2])*(train[i, 2] - mean1[1])
-    cov1[2, 1]=cov1[2, 1] + (train[i, 3] - mean1[2])*(train[i, 2] - mean1[1])
-    cov1[2, 2]=cov1[2, 2] + (train[i, 3] - mean1[2])*(train[i, 3] - mean1[2])
+    x=c(train[i, 2], train[i, 3])
+    cov1 = cov1 + (x-mean1) %*% t(x-mean1)
   }
 }
 covmatrix=(1/(frequency[1,2]+frequency[2,2]-2))*(cov0+cov1)
 
 ```
 
-* We have 
-$$Pr(Y=k|\boldsymbol{X}=\boldsymbol{x})=p_k(\boldsymbol{x})
+* We want to find when 
+$$Pr(Y=0|\boldsymbol{X}=\boldsymbol{x})=Pr(Y=1|\boldsymbol{X}=\boldsymbol{x})$$
+We rewrite this as 
+$$\frac{\pi_0 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_0(\boldsymbol{x})}=\frac{\pi_1 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_0(\boldsymbol{x})}$$
+Since the denominators are equal on both sides, we can disregard them. By taking logarithms on both sides we achieve 
+$$-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0}) + \log{\pi_0}=-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1}) + \log{\pi_1}$$
+We now complete the miltiplications, and remove the equal parts on each side to get:
+$$\frac{1}{2}(\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} +\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x} - \boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}) + \log{\pi_0}=\frac{1}{2}(\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} +\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x} - \boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}) + \log{\pi_1}$$
+Now we know the covariance matrix is symmetric positive definite. We therefore know $\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k} =\boldsymbol{\mu_k}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x}$. We therefore finally get 
+$$\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x}),$$
+where 
+$$\delta_k(\boldsymbol{x})=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k}- \frac{1}{2}\boldsymbol{\mu_k}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k} + \log{\pi_k}; \quad k\in \{0, 1\}$$. 
