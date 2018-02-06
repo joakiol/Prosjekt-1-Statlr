@@ -1,0 +1,127 @@
+---
+subtitle: "TMA4268 Statistical Learning V2018"
+title: "Compulsory exercise 1: Group X"
+author: "NN1, NN and NN3"
+date: "Date when you hand in"
+output: #3rd letter intentation hierarchy
+  pdf_document:
+  #   theme: tactile
+  #   highlight: github
+  # prettydoc::html_pretty:
+editor_options: 
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Take a look at the cheat sheets for R Markdown here: File > Help > Cheatsheets > R Markdown Cheat Sheet in RStudio, or here
+<http://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf>
+
+or the lessons: <http://rmarkdown.rstudio.com/lesson-1.html>
+
+# Problem 1 - Core concepts in statistical learning [2 points]
+
+## a) Training and test MSE [1 point]
+Here you write your smart answer. You may write latex $Y=f(x)+\varepsilon$.
+
+Items with
+
+* item1
+* item2
+
+## b) Bias-variance trade-off [1 point]
+
+* Explain how that is done. Hint: this is what the $M$ repeated training data sets are used for. 
+* Focus on Figure 4. As the flexibility of the model increases ($K$ decreases), what happens with
+    + the squared bias,  
+    + the variance, and  
+    + the irreducible error?
+* What would you recommend is the optimal value of $K$? Is this in agreement with what you found in a)?
+
+# Problem 2 - Linear regression [4 points]
+
+Here you see an R chunk that is evaluated (when knitting) and code is displayed.
+
+```{r,echo=TRUE,eval=FALSE}
+library(ggplot2)
+data = read.table("https://www.math.ntnu.no/emner/TMA4268/2018v/data/SYSBPreg3uid.txt")
+dim(data)
+colnames(data)
+modelA=lm(-1/sqrt(SYSBP) ~ .,data = data)
+summary(modelA)
+```
+
+## a) Understanding model output [1 point]
+## b) Model fit [1 point]
+## c) Confidence interval and hypothesis test [1 points]
+## d) Prediction [1 point]
+
+#Problem 3 - Classification
+
+## c) LDA (& QDA)
+ The expression from the task is found by assuming the classes are normal distributed according to the function  
+
+
+$$f_k(x)=\frac{1}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2}}e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_k})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_k})}.$$ 
+The posterior probability is the calculated as 
+$$p_k(x)=Pr(Y=k|\boldsymbol{X}=\boldsymbol{x})=\frac{Pr(\boldsymbol{X}=\boldsymbol{x}|Y=k)Pr(Y=k)}{Pr(\boldsymbol{X}=\boldsymbol{x})}=\frac{\pi_kf_k(\boldsymbol{x})}{\sum_{l=1}^K\pi_lf_l(\boldsymbol{x})}$$
+
+* Here, $\pi_k=Pr(Y=k)$, which is the probability that a given wine sample $Y$ belongs to class $k$. $\boldsymbol{\mu_k}$ is the vector containing the expected values of the parametres, which is color intensity and alcalinity of ash in this task. $\boldsymbol{\Sigma}$ is the covariance matrix for the parametres, which contains the variance of the parametres and the covariance between them. $f_k(x)$ is as mentioned the probability density function for a given class, which again is the conditional probability of $x$ with a given class, $f_k(x)=Pr(\boldsymbol{X}=\boldsymbol{x}|Y=k)$. 
+
+* To estimate $\pi_k$ we can use the the total number of samples in the training set $n$, and the number of samples belonging to the requested class, $n_k$. We can then use te estimator $\hat{\pi}_k=\frac{n_k}{n}$. $\mu_k$ can be estimated simply using a sample mean from all the samples belonging to the requested class. The estimator is then calculated as $\hat{\mu}_k=\frac{1}{n_k}\sum_{i:y_i=k}x_i$. To estimate the covariance matrix, the class-specific covariance matrices can be calculated as
+$$\hat{\boldsymbol{\Sigma}}_k=\frac{1}{n_k-1}\sum_{i:y_i=k}(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)^T$$
+The true covariance matrix is the found by summing over the difference classes using wheighs according to the fraction of samples in the belonging class. We then get 
+$$\hat{\boldsymbol{\Sigma}}=\sum_{k=1}^K \frac{n_k-1}{n-K}\cdot \hat{\boldsymbol{\Sigma}}_k.$$ 
+Calculations for the training data is done in R, resulting in values $\pi_0=0.45$, $\pi_1=0.55$, $\boldsymbol{\mu_0}=(17.38 , 5.57)^T$, $\boldsymbol{\mu_1}=(21, 2.97)^T$ and 
+$$
+\hat{\boldsymbol{\Sigma}}=
+\left(\begin{array}{cc}
+7.84 & -0.16\\
+-0.16 & 1.15
+\end{array}\right)
+$$
+
+
+```{r,echo=FALSE,eval=FALSE}
+library(ggplot2)
+library(GGally)
+library(class)
+library(MASS)
+library(pROC)
+library(plyr)
+wine=read.csv("https://www.math.ntnu.no/emner/TMA4268/2018v/data/Comp1Wine.csv",sep=" ")
+wine$class=as.factor(wine$class-1)
+colnames(wine)=c("y","x1","x2")
+#ggpairs(wine, ggplot2::aes(color=y))
+n=dim(wine)[1]
+set.seed(4061) #to get the same order if you rerun - but you change this to your favorite number
+ord = sample(1:n) #shuffle
+test = wine[ord[1:(n/2)],]
+train = wine[ord[((n/2)+1):n],]
+frequency=count(train, "y")
+mean0=c(mean(train[train$y==0, "x1"]), mean(train[train$y==0, "x2"]))
+mean1=c(mean(train[train$y==1, "x1"]), mean(train[train$y==1, "x2"]))
+cov0=matrix(0,2,2)
+cov1=matrix(0,2,2)
+a=(train[[2]][4] - mean0[1])*(train[[2]][4] - mean0[1])
+for (i in 1:(n/2)){
+  if (train[i, 1]==0){
+    cov0[1, 1]=cov0[1, 1] + (train[i, 2] - mean0[1])*(train[i, 2] - mean0[1])
+    cov0[1, 2]=cov0[1, 2] + (train[i, 3] - mean0[2])*(train[i, 2] - mean0[1])
+    cov0[2, 1]=cov0[2, 1] + (train[i, 3] - mean0[2])*(train[i, 2] - mean0[1])
+    cov0[2, 2]=cov0[2, 2] + (train[i, 3] - mean0[2])*(train[i, 3] - mean0[2])
+  }else{
+    cov1[1, 1]=cov1[1, 1] + (train[i, 2] - mean1[1])*(train[i, 2] - mean1[1])
+    cov1[1, 2]=cov1[1, 2] + (train[i, 3] - mean1[2])*(train[i, 2] - mean1[1])
+    cov1[2, 1]=cov1[2, 1] + (train[i, 3] - mean1[2])*(train[i, 2] - mean1[1])
+    cov1[2, 2]=cov1[2, 2] + (train[i, 3] - mean1[2])*(train[i, 3] - mean1[2])
+  }
+}
+covmatrix=(1/(frequency[1,2]+frequency[2,2]-2))*(cov0+cov1)
+
+```
+
+* We have 
+$$Pr(Y=k|\boldsymbol{X}=\boldsymbol{x})=p_k(\boldsymbol{x})
