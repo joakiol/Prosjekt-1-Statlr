@@ -11,9 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Problem 2
 
-
-#a)
-
 ```{r}
 library(ggplot2)
 data = read.table("https://www.math.ntnu.no/emner/TMA4268/2018v/data/SYSBPreg3uid.txt")
@@ -21,8 +18,10 @@ dim(data)
 colnames(data)
 modelA=lm(-1/sqrt(SYSBP) ~ .,data = data)
 summary(modelA)
-
 ```
+
+
+#a)
 In this problem, we are going to model $-\frac{1}{\sqrt{SYSBP}}$ as a function of the covariates SEX, AGE, CURSMOKE, BMI, TOTCHOL and BPMEDS.
 The equation for the fitted model A, where $-\frac{1}{\sqrt{SYSBP}}$ is the response, is 
 $$\boldsymbol{Y}=\boldsymbol{\beta}\boldsymbol{X}+\boldsymbol{\epsilon},$$
@@ -40,53 +39,42 @@ If there is no relation between the variable and the response, then the t-statis
 
 The `Residual standard error` is an estimate of the standard deviation of the error term $\epsilon$. We have that $\sigma^2=Var(\epsilon)$, so the Residual standard error, RSE, is an estimate of $\sigma$. The formula for this is $RSE = \sqrt{RSS/(n-2)}$, where RSS is the residual sum of squares. The residual standard error is a measurement of how much the model deviates from the true data. 
 
-In order to see whether the regression is significant,  there is a relationship between the response and the covariates at all, one can use a hypthesis test. If the null hypothesis is set to be H_0: $ \beta_{SEX} = \beta_{AGE} = ... = \beta_{BPMEDS} = 0$, with the alternative H_1: at least one $\beta_j$ is non-zero, the `F-statistic` can be computed. The formula of this is $$F = \frac{(TSS-RSS)/p}{RSS/(n-p-1)}.$$ If the F-statistric is close to 1, it may be an indication of n association between the respons and the predictors. Here, the F-statistic is much larger than 1, so we can expect the alternative hypothesis to be true. 
+In order to see whether the regression is significant,  there is a relationship between the response and the covariates at all, one can use a hypothesis test. If the null hypothesis is set to be H_0:  $\beta_{SEX} = \beta_{AGE} = ... = \beta_{BPMEDS} = 0$, with the alternative H_1: at least one $\beta_j$ is non-zero, the `F-statistic` can be computed. The formula of this is $$F = \frac{(TSS-RSS)/p}{RSS/(n-p-1)}.$$ If the F-statistric is close to 1, it may be an indication of an association between the respons and the predictors. Here, the F-statistic is much larger than 1, so we can expect the alternative hypothesis to be true. 
 
 #b)
 While the residual standard error gives an absolute measure of lack of fit of the model, the $R^2$-statistic provides a value between 0 and 1. This value is the proportion of variance which the the model can explain. Here, the $R^2$-value of the data is 0.2494. In other words, about 1/4 of the variability can be explained by the fitted `modelA`.
 
-```{r,echo=FALSE}
+```{r,echo=FALSE,eval=TRUE}
 ggplot(modelA, aes(.fitted, .resid)) + geom_point(pch = 21) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_smooth(se = FALSE, col = "red", size = 0.5, method = "loess") +
   labs(x = "Fitted values", y = "Residuals", title = "Fitted values vs. residuals", subtitle = deparse(modelA$call))
-```
-
-```{r,echo=FALSE}
+# qq-plot of residuals
 ggplot(modelA, aes(sample = .stdresid)) +
   stat_qq(pch = 19) +
   geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
   labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelA$call))
+
+```
+
+Diagnostic plots of "fitted values vs. standardized residuals" and "QQ-plot of standardized residuals" are shown above. From these plots, we can see that the model seems to fit well. The plot of the residuals vs fitted values shows that the residuals mostly are equally spread around a horizontal line. This is a good indication of a linear relationship between the response and the covariates. In addition, the residuals in the qq-plot follow almost a straight line all the way. Thus, the residuals seem to be Gaussian distributed. 
+
+```{r}
+modelB=lm(SYSBP ~ .,data = data)
+summary(modelB)
 ```
 
 ```{r,echo=FALSE}
+# residuls vs fitted
 ggplot(modelB, aes(.fitted, .resid)) + geom_point(pch = 21) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_smooth(se = FALSE, col = "red", size = 0.5, method = "loess") +
   labs(x = "Fitted values", y = "Residuals", title = "Fitted values vs. residuals", subtitle = deparse(modelB$call))
-```
-
-```{r, echo=FALSE}
+# qq-plot of residuals
 ggplot(modelB, aes(sample = .stdresid)) +
   stat_qq(pch = 19) +
   geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
   labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
 ```
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

@@ -5,6 +5,9 @@ colnames(data)
 modelA=lm(-1/sqrt(SYSBP) ~ .,data = data)
 summary(modelA)
 
+modelB=lm(SYSBP ~ .,data = data)
+summary(modelB)
+
 # residuls vs fitted
 ggplot(modelA, aes(.fitted, .resid)) + geom_point(pch = 21) +
   geom_hline(yintercept = 0, linetype = "dashed") +
@@ -18,3 +21,17 @@ ggplot(modelA, aes(sample = .stdresid)) +
 # normality test
 library(nortest)
 ad.test(rstudent(modelA))
+
+# residuls vs fitted
+ggplot(modelB, aes(.fitted, .resid)) + geom_point(pch = 21) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, col = "red", size = 0.5, method = "loess") +
+  labs(x = "Fitted values", y = "Residuals", title = "Fitted values vs. residuals", subtitle = deparse(modelB$call))
+# qq-plot of residuals
+ggplot(modelB, aes(sample = .stdresid)) +
+  stat_qq(pch = 19) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
+# normality test
+library(nortest)
+ad.test(rstudent(modelB))
