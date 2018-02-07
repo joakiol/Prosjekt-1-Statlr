@@ -1,0 +1,92 @@
+---
+title: "Prosjekt 1"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 2
+
+
+#a)
+
+```{r}
+library(ggplot2)
+data = read.table("https://www.math.ntnu.no/emner/TMA4268/2018v/data/SYSBPreg3uid.txt")
+dim(data)
+colnames(data)
+modelA=lm(-1/sqrt(SYSBP) ~ .,data = data)
+summary(modelA)
+
+```
+In this problem, we are going to model $-\frac{1}{\sqrt{SYSBP}}$ as a function of the covariates SEX, AGE, CURSMOKE, BMI, TOTCHOL and BPMEDS.
+The equation for the fitted model A, where $-\frac{1}{\sqrt{SYSBP}}$ is the response, is 
+$$\boldsymbol{Y}=\boldsymbol{\beta}\boldsymbol{X}+\boldsymbol{\epsilon},$$
+
+where $\boldsymbol{{\beta}}$ is a vector consisting of the regression parameterers corresponding to each covariate, including the intercept, $\beta_0$.
+
+In the summary output, the column with `Estimate` is the estimated values for the coefficients of the model, the $\hat{\beta}'s$. In particular, `Intercept` is the estimate for $\beta_0$. The other estimated coefficients tell us how much we can expect $-\frac{1}{\sqrt{SYSBP}}$ to change given a change i  the respective covariates. The parameters in $\boldsymbol{\beta}$ can be estimated with maximum likelihood and least squares, which both gives $$\boldsymbol{\hat{\beta}}=(\boldsymbol{X}^T\boldsymbol{X})^{-1}\boldsymbol{X}^T\boldsymbol{Y}.$$
+
+`Std. Error` is the standard error of the coeffiecients. These values tell us how close the estimated coefficients are to the true values of the coefficients.
+
+Further, the values under `t value` tell us how many standard deviations $\beta_i$ is away from 0. These values are calculated by $$t_i = \frac{\hat{\beta_i}}{SE(\hat{\beta_i})}.$$
+In other words, if the t-value is large, the variable is most likely related to the response. 
+
+If there is no relation between the variable and the response, then the t-statistic is expected to have a t-distribution with n-2 degrees of freedom. Due to the central limit theorem, the t-distribution will be quite similar to the normal distribution for values of n larger than approximately 30. Thus, it is easy to compute the probability of observing any number larger than $|t|$. This probabilities are the p-values, and they are shown in the under `Pr(>|t|)` in the summary output. Small p-values tell us that it is very unlikely that the observed association between the variable and the response is only due to chance. Thus the p-values indicate whether each of the variables is related to the response.
+
+The `Residual standard error` is an estimate of the standard deviation of the error term $\epsilon$. We have that $\sigma^2=Var(\epsilon)$, so the Residual standard error, RSE, is an estimate of $\sigma$. The formula for this is $RSE = \sqrt{RSS/(n-2)}$, where RSS is the residual sum of squares. The residual standard error is a measurement of how much the model deviates from the true data. 
+
+In order to see whether the regression is significant,  there is a relationship between the response and the covariates at all, one can use a hypthesis test. If the null hypothesis is set to be H_0: $ \beta_{SEX} = \beta_{AGE} = ... = \beta_{BPMEDS} = 0$, with the alternative H_1: at least one $\beta_j$ is non-zero, the `F-statistic` can be computed. The formula of this is $$F = \frac{(TSS-RSS)/p}{RSS/(n-p-1)}.$$ If the F-statistric is close to 1, it may be an indication of n association between the respons and the predictors. Here, the F-statistic is much larger than 1, so we can expect the alternative hypothesis to be true. 
+
+#b)
+While the residual standard error gives an absolute measure of lack of fit of the model, the $R^2$-statistic provides a value between 0 and 1. This value is the proportion of variance which the the model can explain. Here, the $R^2$-value of the data is 0.2494. In other words, about 1/4 of the variability can be explained by the fitted `modelA`.
+
+```{r,echo=FALSE}
+ggplot(modelA, aes(.fitted, .resid)) + geom_point(pch = 21) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, col = "red", size = 0.5, method = "loess") +
+  labs(x = "Fitted values", y = "Residuals", title = "Fitted values vs. residuals", subtitle = deparse(modelA$call))
+```
+
+```{r,echo=FALSE}
+ggplot(modelA, aes(sample = .stdresid)) +
+  stat_qq(pch = 19) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelA$call))
+```
+
+```{r,echo=FALSE}
+ggplot(modelB, aes(.fitted, .resid)) + geom_point(pch = 21) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE, col = "red", size = 0.5, method = "loess") +
+  labs(x = "Fitted values", y = "Residuals", title = "Fitted values vs. residuals", subtitle = deparse(modelB$call))
+```
+
+```{r, echo=FALSE}
+ggplot(modelB, aes(sample = .stdresid)) +
+  stat_qq(pch = 19) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
+```
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
