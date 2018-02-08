@@ -57,12 +57,16 @@ ggplot(modelA, aes(sample = .stdresid)) +
 
 ```
 
-Diagnostic plots of "fitted values vs. standardized residuals" and "QQ-plot of standardized residuals" are shown above. From these plots, we can see that the model seems to fit well. The plot of the residuals vs fitted values shows that the residuals mostly are equally spread around a horizontal line. This is a good indication of a linear relationship between the response and the covariates. In addition, the residuals in the qq-plot follow almost a straight line all the way. Thus, the residuals seem to be Gaussian distributed. 
+Diagnostic plots of "fitted values vs. standardized residuals" and "QQ-plot of standardized residuals" for modelA are shown above. From these plots, we can see that the model seems to fit well. The plot of the residuals vs fitted values shows that the residuals mostly are equally spread around a horizontal line. This is a good indication of a linear relationship between the response and the covariates. In addition, the residuals in the qq-plot follow almost a straight line all the way. Thus, the residuals seem to be Gaussian distributed.
+
+We then make a new model, modelB, where $SYSBP$ is the response.
 
 ```{r}
 modelB=lm(SYSBP ~ .,data = data)
 summary(modelB)
 ```
+
+For this model, the plot of residuals vs fitted values and the qq-plot are as follows:
 
 ```{r,echo=FALSE}
 # residuls vs fitted
@@ -77,4 +81,26 @@ ggplot(modelB, aes(sample = .stdresid)) +
   labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
 ```
 
+The plot of fitted values vs residuals for modelB seems quite similar to the one for modelA. However, the residuals in the qq-plot do not follow a straight line, so the residuals are probably not Gaussian distributed. In addition, we can do the Anderson-Darling normality test:
 
+```{r}
+library(nortest)
+ad.test(rstudent(modelA))
+ad.test(rstudent(modelB))
+```
+
+From these p-values, we can clearly conclude that the residuals in modelB is not Gaussian distributed, while the opposite is most likely true in modelA.
+
+Due to these comparisons, I would prefer modelA if the aim is to make inference about systolic blood pressure. The transformation of the response to $-\frac{1}{\sqrt{SYSBP}}$ gives residuals which are akmost Gaussian distributed, so this one is preferable. 
+
+
+#c)
+Using modelA, we can from the estimate-column in the summary-output find the estimates for the coeffiecients, the $\hat{\beta}$'s, belonging to each covariate. Thus, we can see that $$\hat{\beta_{BMI}}=3.087\cdot10^{-4}.$$
+
+Therefore, according to the model, if the BMI is increased by 1, the response $-\frac{1}{\sqrt{SYSBP}}$ is estimated to increase by $3.087\cdot10^{-4}$. 
+
+We have that for each $\beta_j$, $\hat{\beta}_j \sim N(\beta_j,\text{Var}(\hat{\beta}_j))$ and 
+$$T_j =\frac{\hat{\beta}_j-\beta_j}{\sqrt{\widehat{\text{Var}}(\hat{\beta}_j)}} \sim t_{n-2}.$$
+Using this, we can construct a confidence interval for $\hat{\beta_{BMI}}$. This interval will then be on the form $\hat{\beta_{BMI}} \pm t_{\alpha/2,n-2}SE(\hat{\beta_{BMI}})$. In order to make a 99 % confidence interval, we have $\alpha=0.01$. Thus, we can look up in a table to find the value $t_{0,005,n-2} \approx z_{0,005} = 2.58$. Since $n=2600 > 30$, we can use this approximation by the Central Limit Theorem. Now, by using the values of $\hat{\beta_{BMI}}$ and $SE(\hat{\beta_{BMI}})$ from the summary-output, we obtain the 99 % confidence interval $(3.087 \cdot 10^{-4} \pm 2.58 * 2.955 \cdot 10^{-5}),$ $$(2.325 \cdot 10^{-4}, 3.849 \cdot 10^{-4}).$$ 
+
+The interpretation of this interval is that we can have 99 % confidence that the true $\beta$ is within this interval. 
