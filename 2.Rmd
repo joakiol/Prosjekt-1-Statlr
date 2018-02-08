@@ -97,10 +97,35 @@ Due to these comparisons, I would prefer modelA if the aim is to make inference 
 #c)
 Using modelA, we can from the estimate-column in the summary-output find the estimates for the coeffiecients, the $\hat{\beta}$'s, belonging to each covariate. Thus, we can see that $$\hat{\beta_{BMI}}=3.087\cdot10^{-4}.$$
 
-Therefore, according to the model, if the BMI is increased by 1, the response $-\frac{1}{\sqrt{SYSBP}}$ is estimated to increase by $3.087\cdot10^{-4}$. 
+Therefore, according to the model, if the BMI is increased by 1 while the other covariates are fixed, the response $-\frac{1}{\sqrt{SYSBP}}$ is estimated to increase by $3.087\cdot10^{-4}$. 
 
 We have that for each $\beta_j$, $\hat{\beta}_j \sim N(\beta_j,\text{Var}(\hat{\beta}_j))$ and 
 $$T_j =\frac{\hat{\beta}_j-\beta_j}{\sqrt{\widehat{\text{Var}}(\hat{\beta}_j)}} \sim t_{n-2}.$$
 Using this, we can construct a confidence interval for $\hat{\beta_{BMI}}$. This interval will then be on the form $\hat{\beta_{BMI}} \pm t_{\alpha/2,n-2}SE(\hat{\beta_{BMI}})$. In order to make a 99 % confidence interval, we have $\alpha=0.01$. Thus, we can look up in a table to find the value $t_{0,005,n-2} \approx z_{0,005} = 2.58$. Since $n=2600 > 30$, we can use this approximation by the Central Limit Theorem. Now, by using the values of $\hat{\beta_{BMI}}$ and $SE(\hat{\beta_{BMI}})$ from the summary-output, we obtain the 99 % confidence interval $(3.087 \cdot 10^{-4} \pm 2.58 * 2.955 \cdot 10^{-5}),$ $$(2.325 \cdot 10^{-4}, 3.849 \cdot 10^{-4}).$$ 
 
 The interpretation of this interval is that we can have 99 % confidence that the true $\beta$ is within this interval. Considering the hypothesis test $H_0: \beta_{BMI} = 0$ against $H_1: \beta_{BMI} \neq 0$, we can get information about the p-value for this test through the confidence interval. Since the confidence interval does not contain the null hypothesis value $\beta_{BMI}=0$, we now that the p-value is less than the significance level $\alpha = 0.01$. Equivalently, the hypothesis test is statistically significant.   
+
+#d)
+Now we consider a person with these data:
+```{r}
+names(data)
+new=data.frame(SEX=1,AGE=56,CURSMOKE=1,BMI=89/1.75^2,TOTCHOL=200,BPMEDS=0)
+
+```
+
+In order to make a guess for his $-\frac{1}{\sqrt{SYSBP}}$, we insert these data into the the equation for the multiple linear regression modelA, with the estimated values $\hat{\beta_j}$ from task a. We then get the response value $-0.086$, which is our best guess. If we have that $y=-\frac{1}{\sqrt{SYSBP}}$, we have that the inverse function is equal to $SYSBP=\frac{1}{y^2}$. Thus, when using that the best guess for $y$ is $-0.08667$, we get that the best guess for the systolic blood pressure of this person is $SYSBP = \frac{1}{(-0.086)^2} = 133.1$.
+
+To make a 90 % prediction interval for this persons systolic blood pressure SYSBP, we can construct a prediction interval for the response of modelA, and then transform the limits of the interval by the inverse function of $-\frac{1}{\sqrt{SYSBP}}$:
+```{r}
+predict(modelA,newdata=new,interval ="prediction",type="response",level=0.90)
+"Limits of prediction interval for SYSBP:"
+lower = 1/(predict(modelA,newdata=new,interval ="prediction",type="response",level=0.90)[2]^2)
+lower
+upper = 1/(predict(modelA,newdata=new,interval ="prediction",type="response",level=0.90)[3]^2)
+upper
+```
+
+Thus, according to our model, the probability is 90 % that this person has a systolic blood pressure between 107.9 and 168.3. The range of this interval is very large, so the prediction interval is not that informative. If we look at the dataset, we can see that a very large amount of the people in the study has a systolic blood pressure in this interval. Therefore, we would have wanted a smaller range of the prediction interval in order to get useful information from it.  
+
+
+
