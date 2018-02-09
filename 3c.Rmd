@@ -84,7 +84,7 @@ $$
 $$
 
 
-```{r,echo=FALSE,eval=TRUE}
+```{r,echo=FALSE, eval=TRUE}
 library(ggplot2)
 library(GGally)
 library(class)
@@ -96,9 +96,9 @@ wine$class=as.factor(wine$class-1)
 colnames(wine)=c("y","x1","x2")
 #ggpairs(wine, ggplot2::aes(color=y))
 n=dim(wine)[1]
-set.seed(4061) #to get the same order if you rerun - but you change this to your favorite number
+set.seed(4268) #to get the same order if you rerun - but you change this to your favorite number
 ord = sample(1:n) #shuffle
-test = wine[ord[1:(n/2)],]
+test = wine[ord[1:(n/2)],] 
 train = wine[ord[((n/2)+1):n],]
 frequency=count(train, "y")
 pi0=(frequency[1, 2]/(frequency[1,2]+frequency[2,2]))
@@ -133,7 +133,9 @@ $$\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x}),$$
 where 
 $$\delta_k(\boldsymbol{x})=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k}- \frac{1}{2}\boldsymbol{\mu_k}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k} + \log{\pi_k}; \quad k\in \{0, 1\}$$. 
 
-```{r,echo=FALSE}
+* In the following figure, the LDA has been done using the lda-function in R. The plots include the training data together with the classification areas. 
+
+```{r,echo=FALSE, eval=TRUE}
 library(class)
 library(MASS)
 library(ggplot2)
@@ -151,4 +153,21 @@ wine_lda_df = bind_rows(mutate(testgrid, type_lda))
 
 winelda_plot = wine0_plot + geom_point(aes(x = x1, y=x2, colour=type_lda), data=wine_lda_df, size=0.8)
 winelda_plot
+```
+
+* To find the class boundary formula, we need to solve the equation $\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x})$. We get 
+
+$$\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}- \frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} + \log{\pi_0}=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}- \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\pi_1}  \\
+\boldsymbol{x}^T(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} - \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\frac{\pi_1}{\pi_0}}$$
+
+We use estimators for the parametres as discussed earlier in this task. The necessary values are calculated in R, and we get $\log{\frac{\pi_1}{\pi_0}}=
+
+```{r,echo=FALSE, eval=TRUE}
+library(ggplot2)
+library(dplyr)
+sum1=log(pi1/pi0)
+sum2=(-1/2)*t(mean1)%*%solve(covmatrix)%*%mean1
+sum3=(-1/2)*t(mean0)%*%solve(covmatrix)%*%mean0
+sum4=solve(covmatrix)%*%mean1
+sum5=solve(covmatrix)%*%mean0
 ```
