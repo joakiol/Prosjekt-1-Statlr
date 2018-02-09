@@ -14,6 +14,8 @@ editor_options:
   
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warnings=FALSE)
+knitr::opts_chunk$set(message =FALSE)
 ```
 
 Take a look at the cheat sheets for R Markdown here: File > Help > Cheatsheets > R Markdown Cheat Sheet in RStudio, or here
@@ -100,6 +102,9 @@ set.seed(4268) #to get the same order if you rerun - but you change this to your
 ord = sample(1:n) #shuffle
 test = wine[ord[1:(n/2)],] 
 train = wine[ord[((n/2)+1):n],]
+train0=train[train$y==0, 2:3]
+train1=train[train$y==1, 2:3]
+
 frequency=count(train, "y")
 pi0=(frequency[1, 2]/(frequency[1,2]+frequency[2,2]))
 pi1=(frequency[2, 2]/(frequency[1,2]+frequency[2,2]))
@@ -157,8 +162,8 @@ winelda_plot
 
 * To find the class boundary formula, we need to solve the equation $\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x})$. We get 
 
-$$\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}- \frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} + \log{\pi_0}=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}- \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\pi_1}  \\
-\boldsymbol{x}^T(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} - \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\frac{\pi_1}{\pi_0}}$$
+$$\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}- \frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} + \log{\pi_0}=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}- \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\pi_1}$$
+$$\boldsymbol{x}^T(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} - \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\frac{\pi_1}{\pi_0}}$$
 
 We use estimators for the parametres as discussed earlier in this task. The necessary values are calculated in R, and we get $\log{\frac{\pi_1}{\pi_0}}=0.216$, $\frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}=-41.1$, $\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}=-49.2$ and $(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=(-0.17, 2.63)^T$.
 We then get the equation 
@@ -178,7 +183,7 @@ lda_manual
 confusionmatrix=matrix(0,2,2)
 for (i in 1:(n/2)){
   if (test[i,1]==0){
-    if (test[i,3]>=(0.065*test[i,2]+3.16)){
+    if (train[i,3]>=(0.065*test[i,2]+3.16)){#0.0625, 3.184
       confusionmatrix[1,1]=confusionmatrix[1,1]+1
     }else{
       confusionmatrix[1,2]=confusionmatrix[1,2]+1
@@ -193,18 +198,186 @@ for (i in 1:(n/2)){
 }
 
 ```
+<!-- * By checking the points in the training set, a confusion matrix have been created. We got  -->
+<!-- \begin{center} -->
+<!--   \begin{tabular}{ | l | c | r |} -->
+<!--     \hline -->
+<!--       & Predicted 1 & Predicted 2 & Total\\ \hline -->
+<!--     True - & 24 & 6 & 30\\ \hline -->
+<!--     True + & 5 & 30 & 35\\ \hline -->
+<!--     Total & 29 & 36 &  \\ -->
+<!--     \hline -->
+<!--   \end{tabular} -->
+<!-- \end{center} -->
+<!-- The sensitivity is then given by  -->
+<!-- $$\frac{\text{#True Positive}}{\text{#Condition Positive}}=\frac{24}{30}=0.8$$, while the specificity is given by  -->
+<!-- $$\frac{\text{#True Negative}}{\text{#Condition Negative}}=\frac{30}{35}=0.86$$.  -->
+<!-- -->
 
-* By checking the points in the training set, a confusion matrix have been created. We got 
-\begin{center}
-  \begin{tabular}{ | l | c | r |}
-    \hline
-     & Predicted 1 & Predicted 2 & Total\\ \hline
-    True - & 24 & 6 & 30\\ \hline
-    True + & 5 & 30 & 35\\ \hline
-    Total & 29 & 36 & \\
-    \hline
-  \end{tabular}
-\end{center}
-The sensitivity is then given by 
-$$\frac{\text{#True Positive}}{\text{#Condition Positive}}=\frac{24}{30}=0.8$$, while the specificity is given by 
-$$\frac{\text{#True Negative}}{\text{#Condition Negative}}=\frac{30}{35}=0.86$$. 
+> lda_train=lda(y~x1+x2, data=train)
+> lda_train
+Call:
+lda(y ~ x1 + x2, data = train)
+
+Prior probabilities of groups:
+        0         1 
+0.4461538 0.5538462 
+
+Group means:
+        x1       x2
+0 17.25517 5.577241
+1 20.17500 2.966944
+
+Coefficients of linear discriminants:
+           LD1
+x1  0.06067097
+x2 -0.97009878
+> lpred=predict(lda_train, newdata=test)
+> lpred
+$class
+ [1] 0 1 1 1 1 1 1 0 1 1 1 0 1 1 1 1 0 1 0 1 1 0 1 0 1 0 0 1
+[29] 0 1 0 0 1 0 0 1 0 1 0 0 1 1 0 1 0 1 0 0 1 0 0 1 0 0 0 1
+[57] 0 0 1 0 1 1 1 1 1
+Levels: 0 1
+
+$posterior
+               0            1
+99  0.6030427855 3.969572e-01
+123 0.0007043195 9.992957e-01
+42  0.4478408148 5.521592e-01
+65  0.0232478366 9.767522e-01
+26  0.0444283977 9.555716e-01
+115 0.0116035186 9.883965e-01
+124 0.0062499760 9.937500e-01
+8   0.8820213252 1.179787e-01
+107 0.0720745989 9.279254e-01
+127 0.1755376042 8.244624e-01
+63  0.2075896847 7.924103e-01
+46  0.9086621879 9.133781e-02
+128 0.0056624102 9.943376e-01
+83  0.0014551149 9.985449e-01
+116 0.0009979845 9.990020e-01
+60  0.0067892945 9.932107e-01
+50  0.9999947844 5.215588e-06
+120 0.0002952431 9.997048e-01
+47  0.8676646264 1.323354e-01
+119 0.1128349577 8.871650e-01
+86  0.0116468443 9.883532e-01
+15  0.9999149156 8.508442e-05
+75  0.0328181387 9.671819e-01
+14  0.9811240725 1.887593e-02
+121 0.0425379957 9.574620e-01
+45  0.8893439692 1.106560e-01
+54  0.9954104753 4.589525e-03
+25  0.0828510389 9.171490e-01
+30  0.7949115928 2.050884e-01
+129 0.0010865338 9.989135e-01
+122 0.9380173669 6.198263e-02
+52  0.9713372189 2.866278e-02
+61  0.0828838199 9.171162e-01
+84  0.6339377450 3.660623e-01
+19  0.9999923906 7.609383e-06
+82  0.2300226860 7.699773e-01
+27  0.8321845893 1.678154e-01
+109 0.0121870916 9.878129e-01
+1   0.9799882315 2.001177e-02
+56  0.9908884780 9.111522e-03
+101 0.0709942992 9.290057e-01
+39  0.2330086600 7.669913e-01
+40  0.9461607873 5.383921e-02
+73  0.0770224224 9.229776e-01
+21  0.9791993538 2.080065e-02
+24  0.2758882001 7.241118e-01
+43  0.9688679083 3.113209e-02
+13  0.9763470942 2.365291e-02
+111 0.0188607621 9.811392e-01
+31  0.9485678450 5.143216e-02
+10  0.9996572987 3.427013e-04
+106 0.0074781706 9.925218e-01
+9   0.9524720686 4.752793e-02
+59  0.9988413282 1.158672e-03
+2   0.7862957170 2.137043e-01
+76  0.2668325819 7.331674e-01
+62  0.9817125580 1.828744e-02
+68  0.6705002227 3.294998e-01
+102 0.0068951342 9.931049e-01
+58  0.9904363777 9.563622e-03
+5   0.3855864382 6.144136e-01
+93  0.0228736234 9.771264e-01
+89  0.0103571181 9.896429e-01
+96  0.0093967145 9.906033e-01
+103 0.0114184444 9.885816e-01
+
+$x
+            LD1
+99  -0.38003236
+123  2.45297448
+42  -0.14840934
+65   1.15395624
+26   0.90681985
+115  1.41480958
+124  1.64516825
+8   -0.96819057
+107  0.71741179
+127  0.34523588
+63   0.26870130
+46  -1.07363707
+128  1.68182554
+83   2.18488519
+116  2.32423739
+60   1.61441885
+50  -4.71520507
+120  2.77402121
+47  -0.91974931
+119  0.53539887
+86   1.41341786
+15  -3.68469003
+75   1.02307250
+14  -1.68388517
+121  0.92359758
+45  -0.99489216
+54  -2.21114953
+25   0.66167091
+30  -0.72572955
+129  2.29282858
+122 -1.22847080
+52  -1.52601329
+61   0.66151171
+84  -0.42837810
+19  -4.57578919
+82   0.22022820
+27  -0.81667233
+109  1.39648093
+1   -1.66189079
+56  -1.95636328
+101  0.72341521
+39   0.21403375
+40  -1.28364779
+73   0.69093307
+21  -1.64732339
+24   0.13045426
+43  -1.49457263
+13  -1.59881845
+111  1.23279666
+31  -1.30146701
+10  -3.17037848
+106  1.57849385
+9   -1.33212089
+59  -2.72046731
+2   -0.70651861
+76   0.14735935
+62  -1.69579649
+68  -0.48791207
+102  1.60867014
+58  -1.93832119
+5   -0.05373715
+93   1.16008702
+89   1.45721559
+96   1.49349081
+103  1.42081300
+
+> table(test$y, lpred$class)
+   
+     0  1
+  0 24  6
+  1  5 30
