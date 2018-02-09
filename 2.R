@@ -55,3 +55,5 @@ lower
 upper = 1/(predict(modelA,newdata=new,interval ="prediction",type="response",level=0.90)[3]^2)
 upper
 
+
+
