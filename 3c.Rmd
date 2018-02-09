@@ -160,14 +160,51 @@ winelda_plot
 $$\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}- \frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} + \log{\pi_0}=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}- \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\pi_1}  \\
 \boldsymbol{x}^T(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} - \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\frac{\pi_1}{\pi_0}}$$
 
-We use estimators for the parametres as discussed earlier in this task. The necessary values are calculated in R, and we get $\log{\frac{\pi_1}{\pi_0}}=
+We use estimators for the parametres as discussed earlier in this task. The necessary values are calculated in R, and we get $\log{\frac{\pi_1}{\pi_0}}=0.216$, $\frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}=-41.1$, $\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}=-49.2$ and $(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=(-0.17, 2.63)^T$.
+We then get the equation 
+$$2.63x_2-0.17x_1=-7.88 \implies \\ x_2 = 0.065x_1 + 3.16$$
 
 ```{r,echo=FALSE, eval=TRUE}
 library(ggplot2)
 library(dplyr)
+inverse=solve(covmatrix)
 sum1=log(pi1/pi0)
-sum2=(-1/2)*t(mean1)%*%solve(covmatrix)%*%mean1
-sum3=(-1/2)*t(mean0)%*%solve(covmatrix)%*%mean0
+sum2=(1/2)*t(mean1)%*%solve(covmatrix)%*%mean1
+sum3=(1/2)*t(mean0)%*%solve(covmatrix)%*%mean0
 sum4=solve(covmatrix)%*%mean1
 sum5=solve(covmatrix)%*%mean0
+lda_manual=ggplot(test, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_abline(slope=0.065, intercept=3.16)
+lda_manual
+confusionmatrix=matrix(0,2,2)
+for (i in 1:(n/2)){
+  if (test[i,1]==0){
+    if (test[i,3]>=(0.065*test[i,2]+3.16)){
+      confusionmatrix[1,1]=confusionmatrix[1,1]+1
+    }else{
+      confusionmatrix[1,2]=confusionmatrix[1,2]+1
+    }
+  }else{
+    if (test[i,3]<=(0.065*test[i,2]+3.16)){
+      confusionmatrix[2,2]=confusionmatrix[2,2]+1
+    }else{
+      confusionmatrix[2,1]=confusionmatrix[2,1]+1
+    }
+  }
+}
+
 ```
+
+* By checking the points in the training set, a confusion matrix have been created. We got 
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+     & Predicted 1 & Predicted 2 & Total\\ \hline
+    True - & 24 & 6 & 30\\ \hline
+    True + & 5 & 30 & 35\\ \hline
+    Total & 29 & 36 & \\
+    \hline
+  \end{tabular}
+\end{center}
+The sensitivity is then given by 
+$$\frac{\text{#True Positive}}{\text{#Condition Positive}}=\frac{24}{30}=0.8$$, while the specificity is given by 
+$$\frac{\text{#True Negative}}{\text{#Condition Negative}}=\frac{30}{35}=0.86$$. 
