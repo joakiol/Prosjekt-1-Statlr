@@ -76,12 +76,12 @@ $$p_k(x)=Pr(Y=k|\boldsymbol{X}=\boldsymbol{x})=\frac{Pr(\boldsymbol{X}=\boldsymb
 $$\hat{\boldsymbol{\Sigma}}_k=\frac{1}{n_k-1}\sum_{i:y_i=k}(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)^T$$
 The true covariance matrix is the found by summing over the difference classes using wheighs according to the fraction of samples in the belonging class. We then get 
 $$\hat{\boldsymbol{\Sigma}}=\sum_{k=1}^K \frac{n_k-1}{n-K}\cdot \hat{\boldsymbol{\Sigma}}_k.$$ 
-Calculations for the training data is done in R, resulting in values $\pi_0=0.45$, $\pi_1=0.55$, $\boldsymbol{\mu_0}=(17.38 , 5.57)^T$, $\boldsymbol{\mu_1}=(21, 2.97)^T$ and 
+Calculations for the training data is done in R, resulting in values $\pi_0=0.45$, $\pi_1=0.55$, $\boldsymbol{\mu_0}=(17.26 , 5.58)^T$, $\boldsymbol{\mu_1}=(20.18, 2.97)^T$ and 
 $$
 \hat{\boldsymbol{\Sigma}}=
 \left(\begin{array}{cc}
-7.84 & -0.16\\
--0.16 & 1.15
+7.23 & -0.66\\
+-0.66 & 0.95
 \end{array}\right)
 $$
 
@@ -102,35 +102,35 @@ set.seed(4268) #to get the same order if you rerun - but you change this to your
 ord = sample(1:n) #shuffle
 test = wine[ord[1:(n/2)],] 
 train = wine[ord[((n/2)+1):n],]
-train0=train[train$y==0, 2:3]
-train1=train[train$y==1, 2:3]
+cov0=var(train[train$y==0, 2:3])
+cov1=var(train[train$y==1, 2:3])
 
 frequency=count(train, "y")
 pi0=(frequency[1, 2]/(frequency[1,2]+frequency[2,2]))
 pi1=(frequency[2, 2]/(frequency[1,2]+frequency[2,2]))
 mean0=c(mean(train[train$y==0, "x1"]), mean(train[train$y==0, "x2"]))
 mean1=c(mean(train[train$y==1, "x1"]), mean(train[train$y==1, "x2"]))
-cov0=matrix(0,2,2)
-cov1=matrix(0,2,2)
-for (i in 1:(n/2)){
-  if (train[i, 1]==0){
-    x=c(train[i, 2], train[i, 3])
-    cov0 = cov0 + (x-mean0) %*% t(x-mean0)
-  }else{
-    x=c(train[i, 2], train[i, 3])
-    cov1 = cov1 + (x-mean1) %*% t(x-mean1)
-  }
-}
-covmatrix=(1/(frequency[1,2]+frequency[2,2]-2))*(cov0+cov1)
+#cov0=matrix(0,2,2)
+#cov1=matrix(0,2,2)
+#for (i in 1:(n/2)){
+#  if (train[i, 1]==0){
+#    x=c(train[i, 2], train[i, 3])
+#    cov0 = cov0 + (x-mean0) %*% t(x-mean0)
+#  }else{
+#    x=c(train[i, 2], train[i, 3])
+#    cov1 = cov1 + (x-mean1) %*% t(x-mean1)
+#  }
+#}
+covmatrix=(1/(frequency[1,2]+frequency[2,2]-2))*(cov0*(frequency[1,2]-1)+cov1*(frequency[2,2]-1))
 
 ```
 
 * We want to find when 
 $$Pr(Y=0|\boldsymbol{X}=\boldsymbol{x})=Pr(Y=1|\boldsymbol{X}=\boldsymbol{x})$$
 We rewrite this as 
-$$\frac{\pi_0 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_0(\boldsymbol{x})}=\frac{\pi_1 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_0(\boldsymbol{x})}$$
-Since the denominators are equal on both sides, we can disregard them. By taking logarithms on both sides we achieve 
-$$-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0}) + \log{\pi_0}=-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1}) + \log{\pi_1}$$
+$$\frac{\pi_0 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}=\frac{\pi_1 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}$$
+Since the denominators are equal on both sides, we can disregard them. By taking logarithms on both sides we achieve
+$$-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0}) + \log{\pi_0}=-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1}) + \log{\pi_1}$$
 We now complete the miltiplications, and remove the equal parts on each side to get:
 $$\frac{1}{2}(\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} +\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x} - \boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}) + \log{\pi_0}=\frac{1}{2}(\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} +\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x} - \boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}) + \log{\pi_1}$$
 Now we know the covariance matrix is symmetric positive definite. We therefore know $\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k} =\boldsymbol{\mu_k}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x}$. We therefore finally get 
@@ -138,27 +138,30 @@ $$\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x}),$$
 where 
 $$\delta_k(\boldsymbol{x})=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k}- \frac{1}{2}\boldsymbol{\mu_k}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k} + \log{\pi_k}; \quad k\in \{0, 1\}$$. 
 
-* In the following figure, the LDA has been done using the lda-function in R. The plots include the training data together with the classification areas. 
+<!-- * In the following figure, the LDA has been done using the lda-function in R. The plots include the training data together with the classification areas.  -->
 
-```{r,echo=FALSE, eval=TRUE}
-library(class)
-library(MASS)
-library(ggplot2)
-library(dplyr)
-wine0_plot = ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5)
-testgrid = expand.grid(x1 = seq(min(train[,2]-0.2), max(train[,2]+0.2), 
-              by=0.2), x2 = seq(min(train[,3]-0.2), max(train[,3]+0.2), 
-              by=0.1))
-wine_lda = lda(y~x1+x2, data=train, prior=c(pi0,pi1))
-res = predict(object = wine_lda, newdata = testgrid)
-type_lda = res$class
-postprobs=res$posterior
-wine_lda_df = bind_rows(mutate(testgrid, type_lda))
-#wine_lda_df$type_lda = as.factor(wine_lda_df$type_lda)
+<!-- ```{r,echo=FALSE, eval=TRUE} -->
+<!-- library(class) -->
+<!-- library(MASS) -->
+<!-- library(ggplot2) -->
+<!-- library(dplyr) -->
+<!-- wine0_plot = ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) -->
+<!-- #testgrid = expand.grid(x1 = seq(min(train[,2]-0.2), max(train[,2]+0.2),  -->
+<!-- #              by=0.2), x2 = seq(min(train[,3]-0.2), max(train[,3]+0.2),  -->
+<!-- #              by=0.1)) -->
+<!-- #wine_lda = lda(y~x1+x2, data=train, prior=c(pi0,pi1)) -->
+<!-- wine_lda = lda(y~x1+x2, data=train) -->
+<!-- wine_lda -->
+<!-- #res = predict(object = wine_lda, newdata = testgrid) -->
+<!-- #type_lda = res$class -->
+<!-- #postprobs=res$posterior -->
+<!-- #wine_lda_df = bind_rows(mutate(testgrid, type_lda)) -->
+<!-- #wine_lda_df$type_lda = as.factor(wine_lda_df$type_lda) -->
 
-winelda_plot = wine0_plot + geom_point(aes(x = x1, y=x2, colour=type_lda), data=wine_lda_df, size=0.8)
-winelda_plot
-```
+<!-- #winelda_plot = wine0_plot + geom_point(aes(x = x1, y=x2, colour=type_lda), data=wine_lda_df, size=0.8) -->
+<!-- winelda_plot = wine0_plot + wine_lda -->
+<!-- #winelda_plot -->
+<!-- ``` -->
 
 * To find the class boundary formula, we need to solve the equation $\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x})$. We get 
 
@@ -167,7 +170,7 @@ $$\boldsymbol{x}^T(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma
 
 We use estimators for the parametres as discussed earlier in this task. The necessary values are calculated in R, and we get $\log{\frac{\pi_1}{\pi_0}}=0.216$, $\frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}=-41.1$, $\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}=-49.2$ and $(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=(-0.17, 2.63)^T$.
 We then get the equation 
-$$2.63x_2-0.17x_1=-7.88 \implies \\ x_2 = 0.065x_1 + 3.16$$
+$$2.628x_2-0.164x_1=8.368 \implies \\ x_2 = 0.0625x_1 + 3.184$$
 
 ```{r,echo=FALSE, eval=TRUE}
 library(ggplot2)
@@ -178,7 +181,11 @@ sum2=(1/2)*t(mean1)%*%solve(covmatrix)%*%mean1
 sum3=(1/2)*t(mean0)%*%solve(covmatrix)%*%mean0
 sum4=solve(covmatrix)%*%mean1
 sum5=solve(covmatrix)%*%mean0
-lda_manual=ggplot(test, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_abline(slope=0.065, intercept=3.16)
+leftside=sum5-sum4
+rightside=sum1+sum3-sum2
+slope1=-leftside[1]/leftside[2]
+intercept1=rightside/leftside[2]
+lda_manual=ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_point(data=test, shape=4)+ geom_abline(slope=slope1, intercept=intercept1)
 lda_manual
 confusionmatrix=matrix(0,2,2)
 for (i in 1:(n/2)){
@@ -198,6 +205,9 @@ for (i in 1:(n/2)){
 }
 
 ```
+
+
+
 <!-- * By checking the points in the training set, a confusion matrix have been created. We got  -->
 <!-- \begin{center} -->
 <!--   \begin{tabular}{ | l | c | r |} -->
