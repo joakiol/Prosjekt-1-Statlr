@@ -45,7 +45,7 @@ g1 = ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=3)+geom_abline(slop
 g1 = g1 + ggtitle("train and test and logistic boundary")
 summary(fit)
 ```
-*Using the summary output, we can get the coefficients $\beta_0$, $\beta_1$ and $\beta_2$. Thus by using the formula:
+* Using the summary output, we can get the coefficients $\beta_0$, $\beta_1$ and $\beta_2$. Thus by using the formula:
 \begin{equation}
 P(Y=1|x_1 = 17, x_2=3) = \frac{exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)}{1+exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)} = \frac{exp( 7.3143 + 0.1332*17 - 2.3361*3)}{1+exp( 7.3143 + 0.1332*17 - 2.3361*3)} = \frac{exp(2.5704)}{1+exp(2.5704)}=0.9289.
 \end{equation}
@@ -58,23 +58,37 @@ pred = ifelse(prob > 0.5, 1, 0)
 t = table (pred, test$y)
 t
 ```
-
-```{r, echo=FALSE, warning=FALSE}
-library(knitr)
-library(kableExtra)
-
-row1 = c("", "Predicted -", "Predicted +","Total")
-row2 = c("True -", "True Negative TN", "False Positive FP","N")
-row3 = c("True +", "False Negative FN", "True Positive TP","P")
-row4 = c("Total", "N*", "P*"," ")
-kable(rbind(row1, row2, row3,row4), row.names=FALSE)
-
-```
-The sensitivity is the propotion of correctly classified positive observations, and the specificity is the propotion of correctly classed positive observations. 
-```{r, echo=FALSE, warning=FALSE}
+* The sensitivity is the propotion of correctly classified positive observations, and the specificity is the propotion of correctly classed positive observations. Thus, the values lies between 0 and 1, and the goal is to obtain high values. It's important to note that large value for only one of them is not necessarily any good. For example, a method which just puts every observation in class 1 will have sensitivity 1, but specificity 0. Therefore, we want high values (close to one), but balanced as well. There are cases where there is more important that we get the classification of one class right, than the other, for which we can sacrifice the balance to obtain either a high sensitivity or a high spesificity (example would be to avoid a Type 1 error, for which we can sacrifice the probabolity for actually rejecting a fals $H_0$). That being said, in this case there is no worse to classify a 1-wine as a 0-wine, than the opposite.
+```{r, echo=FALSE}
 sens=t[2,2]/sum(t[2,])
 spec=t[1,1]/sum(t[1,])
 sens
 spec
 ```
-They both obtain relativly large values, and one can therefor argue that the classification works pretty good. Similar values for the sensitivity and the spesificity suggests that the classification does not prefer or default to one class, which is quite valuable.
+They both obtain relativly large values, and one can therefor argue that the classification works pretty good. Similar values for the sensitivity and the spesificity suggests that the classification does not prefer or default to one class, which in this case as discussed above is 
+
+## Task 3b)
+\begin{equation}
+Pr(Y=||X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
+\end{equation}
+* Given the point $x_0$, the equation finds the K nearest points in the dataset, and count the most frequent class among the neigbhours. The right side of the equation finds the precentage of the neighbours which belong to class j, and based on that, we take a decision whether $x_=$ should be in class j or not. 
+```{r, echo=FALSE, warning=FALSE}
+library(class)
+library(dplyr)
+library(ggpubr)
+nn3 = knn(train = train, test = test, cl = train$y, k=3)
+t3 = table(nn3, test$y)
+t3
+sens3=t3[2,2]/sum(t3[2,])
+spec3=t3[1,1]/sum(t3[1,])
+sens3
+spec3
+nn9 = knn(train = train, test = test, cl = train$y, k=9)
+t9 = table(nn9, test$y)
+t9
+sens9=t9[2,2]/sum(t9[2,])
+spec9=t9[1,1]/sum(t9[1,])
+sens9
+spec9
+```
+As we can see from the data
