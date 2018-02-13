@@ -312,9 +312,9 @@ We want high specifity and seinsitivity, and we see values are fairly close to 1
 
 ## d) Compare classifiers
 
-* For logistic regression we got specificity 0.833 and sensitivity 0.857 . For KNN with our preferred $K=3$, we got specificity 0.964  and sensitivity 0.919. For lda we got 0.800 and specificity 0.857. Since we want high specificity and sensitivity, our preferred method when using 0.5 as cut-off is KNN. This method performs considerably better than the other two methods, which are more equal, though logistic regression seems to be slightly better. ha med dette?:Note however that the training and test sets are not that big, and that might influence which method performs better. Our result is still an indication that a strictly linear model might not be optimal for the wine classification problem. 
+* For logistic regression we got specificity 0.833 and sensitivity 0.857. For KNN with our preferred $K=3$, we got specificity 0.964  and sensitivity 0.919. For lda we got 0.800 and specificity 0.857. Since we want high specificity and sensitivity, our preferred method when using 0.5 as cut-off is KNN. This method performs considerably better than the other two methods, which are more equal, though logistic regression seems to be slightly better. ha med dette?:Note however that the training and test sets are not that big, and that might influence which method performs better. Our result is still an indication that a strictly linear model might not be optimal for the wine classification problem. 
 
-* 
+* The following three plots show ROC curves for specificity and sensitivity, and also prints the area under the curves. From the last point we concluded that KNN was the best method for cut-off equal to 0.5. We do however see that the area under the curve is smaller for KNN than for the other methods. We also see on the plot the reason for this, as the line in the lower left corner is less vertical, and the line in the upper right corner is less horizontal. This represents the specificity vs sensitivity when the cut-off is low or high, and compared to the other methods, in the high or low cut-off areas the specificity/sensitivity is lower. It therefore seems like the other methods would work better for high or low cut-off, compared to KNN. Logistic regression and lda performs quite similar, which is natural as they make the both linearity-assumption, and the solutions are quite similar. 
 
 
 ```{r,echo=FALSE, eval=TRUE}
@@ -323,7 +323,6 @@ We want high specifity and seinsitivity, and we see values are fairly close to 1
 #plot(glmroc)
 #auc(glmroc)
 KNN3 = knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = F)
-KNN3
 KNN3probwinning = attributes(knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = TRUE))$prob
 KNN3prob <- ifelse(KNN3 == "0", 1-KNN3probwinning, KNN3probwinning)
 KNN3roc=roc(response=test$y,predictor=KNN3prob)
