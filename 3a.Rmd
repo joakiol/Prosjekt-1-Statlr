@@ -1,12 +1,14 @@
 ---
 title: "StatLr-P1-O3"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warnings=FALSE)
+knitr::opts_chunk$set(message =FALSE)
 ```
 
 ## Task 3a)
@@ -34,7 +36,7 @@ train = wine[ord[((n/2)+1):n],]
 fit = glm(y ~ ., data = train, family = "binomial")
 coef(fit)
 ```
-* There is no obivous interpretation of the $\hat \beta_1$ and $\hat \beta_2$ since a increase of one unit in $\hat \beta$ does not give a consistent increase or decrease for all values of $x_1$. It is however easier to look at the odds $\frac{p_i}{1-p_i}$, which is bounded from below, but not above. The interpretation of the odds in this example is the conditional probability that a wine is in class 1, divided by the probability that the wine is in class 0 for the covariates $x_1$ and $x_2$. Moreocer a increase from $x_{1i}$ to $x_{1i} + 1$, the odds are multiplied by $exp(\beta_1)$, which gives us a more intuitive interpretation of $\hat \beta_1$. The case is similar for $\hat \beta_2$ for a increase in $x_{2i}$, and we can see that $\beta < 0$ the odds will decrease, for $\beta_1 = 0$ the odds will stay the same, and for $\beta_1 >0 $, the odds will increase.
+* There is no obivous interpretation of the $\hat{\beta_1}$ and $\hat{\beta_2}$ since a increase of one unit in $\hat{\beta}$ does not give a consistent increase or decrease for all values of $x_1$. It is however easier to look at the odds $\frac{p_i}{1-p_i}$, which is bounded from below, but not above. The interpretation of the odds in this example is the conditional probability that a wine is in class 1, divided by the probability that the wine is in class 0 for the covariates $x_1$ and $x_2$. Moreocer a increase from $x_{1i}$ to $x_{1i} + 1$, the odds are multiplied by $e^{\beta_1}$, which gives us a more intuitive interpretation of $\hat{\beta_1}$. The case is similar for $\hat{\beta_2}$ for a increase in $x_{2i}$, and we can see that $\beta < 0$ the odds will decrease, for $\beta_1 = 0$ the odds will stay the same, and for $\beta_1 >0$, the odds will increase.
 
 * Since the odds is linear (as shown before), we have a linear class boundary. From earlier, we have: $log \bigg(\frac{Pr(Y_i=1|X=x_i)}{Pr(Y_i=0|X=x_i)} \bigg) = log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, where we want to fit the coefficients by maximaizing the likelihood. Then, where $\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} = 0$, we have the class boundary.
 ```{r,echo=FALSE}
@@ -76,7 +78,7 @@ Pr(Y=||X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
 ```{r, echo=FALSE, warning=FALSE}
 library(class)
 library(dplyr)
-library(ggpubr)
+#library(ggpubr)
 nn3 = knn(train = train, test = test, cl = train$y, k=3)
 t3 = table(nn3, test$y)
 t3
