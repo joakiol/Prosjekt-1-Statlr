@@ -43,6 +43,7 @@ b = coef(fit)[2]
 c = coef(fit)[3]
 g1 = ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=3)+geom_abline(slope=b/(-c),intercept=a/(-c))
 g1 = g1 + ggtitle("train and test and logistic boundary")
+g1
 summary(fit)
 ```
 * Using the summary output, we can get the coefficients $\beta_0$, $\beta_1$ and $\beta_2$. Thus by using the formula:
@@ -90,5 +91,16 @@ sens9=t9[2,2]/sum(t9[2,])
 spec9=t9[1,1]/sum(t9[1,])
 sens9
 spec9
+
+plot.df = data.frame(test, predicted = nn3)
+
+plot.df1 = data.frame(x = plot.df$x1, 
+                      y = plot.df$x2, 
+                      predicted = plot.df$y)
+
+
+ggplot(plot.df, aes(x1, x2, color = predicted, fill = predicted)) + 
+  geom_point(size = 5)
+
 ```
-As we can see from the data
+As we can see from the data, the sencitivity and specificity for k=3 is higher than for k=9. That happens because the neighbours in k=9 becomes further away, and the method doesn't become local anymore.
