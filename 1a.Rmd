@@ -1,0 +1,12 @@
+---
+title: "Oppgave 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task 1a)
+
+* We see that for K=1, the variance is pretty high, which is expected as the curves only will go from point to point. At K=2 we see that the variance lowers some as we now take in to account the two nearest points, and 
