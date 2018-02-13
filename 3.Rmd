@@ -130,9 +130,10 @@ Pr(Y=||X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
 library(class)
 library(dplyr)
 #library(ggpubr)
-nn3 = knn(train = train, test = test, cl = train$y, k=3)
+nn3 = knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = T)
 t3 = table(nn3, test$y)
 t3
+nn3
 sens3=t3[2,2]/sum(t3[2,])
 spec3=t3[1,1]/sum(t3[1,])
 sens3
@@ -327,7 +328,7 @@ KNN3probwinning = attributes(knn(train = train[,-1], test = test[,-1], k = 3, cl
 KNN3prob <- ifelse(KNN3 == "0", 1-KNN3probwinning, KNN3probwinning)
 KNN3roc=roc(response=test$y,predictor=KNN3prob)
 plot(KNN3roc)
-points(0.964, 0.919)
+points(0.8648649, 0.8928571)
 auc(KNN3roc)
 #ltrain=lda(y~x1+x2,data=train)
 #lpred=predict(object = ltrain, newdata = test)$posterior[,1]
