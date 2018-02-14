@@ -40,10 +40,10 @@ One the other hand, the MSE for the test sets does decrease for the first K's, a
 ## b) Bias-variance trade-off
 
 * Explain how that is done. Hint: this is what the $M$ repeated training data sets are used for. 
-    + The squared bias decreases as the flexible increases. That means that for high flexibility there is no systematic difference from the predicted modell and the values being estimated. At higher values for K there will be a systmatic difference. As example, in a) when K=61, we will always get a straight line, and differs from the true underlying values.
+    + The squared bias decreases as the flexible increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systmatic difference. As example, in a) when K=61, we will always get a straight line, and differs from the true underlying values.
     + The variance decreases as K increases, which is due to more points taken account for, and less difference from each training set to the others.
     + The irreducible error isn't dependent on the values of K, and is therefore constant.
-* Based on the sum of the errors, the lowest error is K=3 (but nearly the same as K=5). Thus this will be our choice for K as this will give the most accurate modell. This agrees fairly well with what we found in a), and our conclusion would be that a K between 3 and 5 would give the best results.
+* Based on the sum of the errors, the lowest error is K=3 (but nearly the same as K=5). Thus this will be our choice for K as this will give the most accurate model. This agrees fairly well with what we found in a), and our conclusion would be that a K between 3 and 5 would give the best results.
 
 # Problem 2 - Linear regression [4 points]
 
