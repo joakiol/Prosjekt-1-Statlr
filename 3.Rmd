@@ -3,9 +3,9 @@ title: 'Compulsory exercise 1: Group X'
 author: "NN1, NN and NN3"
 date: "Date when you hand in"
 output:
+  pdf_document: null
   html_document:
     df_print: paged
-  pdf_document: null
 subtitle: TMA4268 Statistical Learning V2018
 editor_options:
   chunk_output_type: console
@@ -24,11 +24,11 @@ or the lessons: <http://rmarkdown.rstudio.com/lesson-1.html>
 
 # Problem 1 - Core concepts in statistical learning [2 points]
 
-## a) Training and test MSE [1 point]
+## a) Training and test MSE
 
 * We see that for K=1, the variance is pretty high, which is expected as the curves only will go from point to point. At K=2 we see that the variance lowers some as we now take in to account the two nearest points, and the peaks will not be that far away from the true line. When K increases, we take account for neigbhours which is not necessary very local anymore. Which K to choose to keep the neighbourhood local depends on the number of observations in the trainingset, and here n=61, and already when K=10, we get somewhat of a problem in the end points. Although a very good fit along most of the line, at the end, it will take the same points in account, and one will get a straight line. At K=61, one will get a straight line, which is the mean.
 
-* A small value of K will give a more flexible fit, which has low bias but high variance. As mentioned above, K=1 will give point-to-point plots, which is an overfit. At K=2 we get a lower variance, and there is no sign of underfitting the curve. At K=10 the variance is notably lower, but the plot shows signs of underfitting and a low flexibility. Continuing the trend, at K=25 we get clearly a underfit and to low flexibility.
+* A small value of K will give a more flexible fit, which has low bias but high variance. As mentioned above, K=1 will give point-to-point plots, which is an overfit. At K=2 we get a lower variance, and there is no sign of underfitting the curve. At K=10 the variance is notably lower, but the plot shows signs of underfitting and a low flexibility. Continuing the trend, at K=25 we get clearly a underfitted and inflexible result.
 
 * The MSE fot the training sets shows how close the predicted curve is to the points it is based on. As we can see, at K=1 the MSE is zero, which is a clear sign of overfitting. The MSE just increase as K increases, which indicates low flexibility. There is by this plot hard to say where the overfitting stops and the low flexibility starts, and thus hard to conclude what's the best value for K. 
 One the other hand, the MSE for the test sets does decrease for the first K's, and then increases. The test set isn't affected by overfitting the same way, and will therefor show the best value for K much clearer. 
@@ -37,14 +37,13 @@ One the other hand, the MSE for the test sets does decrease for the first K's, a
 
 
 
-## b) Bias-variance trade-off [1 point]
+## b) Bias-variance trade-off
 
 * Explain how that is done. Hint: this is what the $M$ repeated training data sets are used for. 
-* Focus on Figure 4. As the flexibility of the model increases ($K$ decreases), what happens with
-    + the squared bias,  
-    + the variance, and  
-    + the irreducible error?
-* What would you recommend is the optimal value of $K$? Is this in agreement with what you found in a)?
+    + The squared bias decreases as the flexible increases. That means that for high flexibility there is no systematic difference from the predicted modell and the values being estimated. At higher values for K there will be a systmatic difference. As example, in a) when K=61, we will always get a straight line, and differs from the true underlying values.
+    + The variance decreases as K increases, which is due to more points taken account for, and less difference from each training set to the others.
+    + The irreducible error isn't dependent on the values of K, and is therefore constant.
+* Based on the sum of the errors, the lowest error is K=3 (but nearly the same as K=5). Thus this will be our choice for K as this will give the most accurate modell. This agrees fairly well with what we found in a), and our conclusion would be that a K between 3 and 5 would give the best results.
 
 # Problem 2 - Linear regression [4 points]
 
@@ -66,7 +65,7 @@ summary(modelA)
 
 #Problem 3 - Classification
 
-## Task 3a)
+## a) Logistic regression
 * We want to show that $logit(p_i) = log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i = \frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}$. Thus, we get:
 \begin{equation}
 log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{1-\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg)= log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{\frac{1}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg) = log \Bigg(exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \Bigg) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}.
@@ -123,9 +122,9 @@ spec=t[1,1]/sum(t[1,])
 sens
 spec
 ```
-They both obtain relativly large values, and one can therefor argue that the classification works pretty good. Similar values for the sensitivity and the spesificity suggests that the classification does not prefer or default to one class, which in this case as discussed above is 
+  They both obtain relativly large values, and one can therefor argue that the classification works pretty good. Similar values for the sensitivity and the spesificity suggests that the classification does not prefer or default to one class, which in this case as discussed above is 
 
-## Task 3b)
+## b) K-nearest neighbor classifier
 \begin{equation}
 Pr(Y=||X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
 \end{equation}
