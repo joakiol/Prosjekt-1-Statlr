@@ -9,4 +9,4 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Task 1a)
 
-* We see that for K=1, the variance is pretty high, which is expected as the curves only will go from point to point. At K=2 we see that the variance lowers some as we now take in to account the two nearest points, and 
+* We see that for K=1, the variance is pretty high, which is expected as the curves only will go from point to point. At K=2 we see that the variance lowers some as we now take in to account the two nearest points, and the peaks will not be that far away from the true line. When K increases, we take account for neigbhours which is not necessary very local anymore. Which K to choose to keep the neighbourhood local depends on the number of observations in the trainingset, and here n=61, and already when K=10, we get somewhat of a problem in the end points. Although a very good fit along most of the line, at the end, it will take in account more of the points towards the middle than the end, and, we will end up with a prediction that does not match very well.
