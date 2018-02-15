@@ -110,17 +110,6 @@ pi0=(frequency[1, 2]/(frequency[1,2]+frequency[2,2]))
 pi1=(frequency[2, 2]/(frequency[1,2]+frequency[2,2]))
 mean0=c(mean(train[train$y==0, "x1"]), mean(train[train$y==0, "x2"]))
 mean1=c(mean(train[train$y==1, "x1"]), mean(train[train$y==1, "x2"]))
-#cov0=matrix(0,2,2)
-#cov1=matrix(0,2,2)
-#for (i in 1:(n/2)){
-#  if (train[i, 1]==0){
-#    x=c(train[i, 2], train[i, 3])
-#    cov0 = cov0 + (x-mean0) %*% t(x-mean0)
-#  }else{
-#    x=c(train[i, 2], train[i, 3])
-#    cov1 = cov1 + (x-mean1) %*% t(x-mean1)
-#  }
-#}
 covmatrix=(1/(frequency[1,2]+frequency[2,2]-2))*(cov0*(frequency[1,2]-1)+cov1*(frequency[2,2]-1))
 
 ```
@@ -187,22 +176,6 @@ slope1=-leftside[1]/leftside[2]
 intercept1=rightside/leftside[2]
 lda_manual=ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_point(data=test, shape=4)+ geom_abline(slope=slope1, intercept=intercept1)
 lda_manual
-confusionmatrix=matrix(0,2,2)
-for (i in 1:(n/2)){
-  if (test[i,1]==0){
-    if (train[i,3]>=(0.065*test[i,2]+3.16)){#0.0625, 3.184
-      confusionmatrix[1,1]=confusionmatrix[1,1]+1
-    }else{
-      confusionmatrix[1,2]=confusionmatrix[1,2]+1
-    }
-  }else{
-    if (test[i,3]<=(0.065*test[i,2]+3.16)){
-      confusionmatrix[2,2]=confusionmatrix[2,2]+1
-    }else{
-      confusionmatrix[2,1]=confusionmatrix[2,1]+1
-    }
-  }
-}
 
 ```
 
@@ -239,3 +212,28 @@ $$\frac{\text{True Negative}}{\text{Condition Negative}}=\frac{30}{35}=0.86.$$
 We want high specifity and seinsitivity, and we see values are fairly close to 1, which mean we get many correct predictions. It still seems like we will do mistakes every now and then, as there are a considerable number of mistakes. 
 
 * In QDA, the covariance matrices for the different classes are allowed to be different. This makes this method more complex, but also more flexible. The decision boundaries will now become quadratic functions of $\boldsymbol{x}$. 
+
+## d) Compare classifiers
+
+* For logistic regression we got specificity 0.833 and sensitivity 0.857 . For KNN with our preferred $K=3$, we got specificity 0.964  and sensitivity 0.919. For lda we got 0.800 and specificity 0.857. Since we want high specificity and sensitivity, our preferred method when using 0.5 as cut-off is KNN. This method performs considerably better than the other two methods, which are more equal, though logistic regression seems to be slightly better. ha med dette?:Note however that the training and test sets are not that big, and that might influence which method performs better. Our result is still an indication that a strictly linear model might not be optimal for the wine classification problem. 
+
+* 
+
+
+```{r,echo=FALSE, eval=TRUE}
+
+glmroc=roc(response=test$y,predictor=prob)
+plot(glmroc)
+auc(glmroc)
+KNN3 = knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = F)
+KNN3probwinning = attributes(knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = TRUE))$prob
+KNN3prob <- ifelse(KNN3 == "0", 1-KNN3probwinning, KNN3probwinning)
+KNN3roc=roc(response=test$y,predictor=KNN3prob)
+plot(KNN3roc)
+auc(KNN3roc)
+ltrain=lda(y~x1+x2,data=train)
+lpred=predict(object = ltrain, newdata = test)$posterior[,1]
+lroc=roc(response=test$y,lpred)
+plot(lroc)
+auc(lroc)
+```
