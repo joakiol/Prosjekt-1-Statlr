@@ -39,8 +39,7 @@ One the other hand, the MSE for the test sets does decrease for the first K's, a
 
 ## b) Bias-variance trade-off
 
-* Explain how that is done. Hint: this is what the $M$ repeated training data sets are used for. 
-You start by fitting a curve to the training data sets by the KNN method. Then you can express the fittet curve as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
+* You start by fitting a curve to the training data sets by the KNN method. Then you can express the fittet curve as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
 $$ E[Y- \hat f (x_0)]^2 .$$ Then we decompose the MSE into three terms:
 $$E[(Y- \hat f (x_0))^2] = Var( \epsilon ) + Var[\hat f  (x_0)] + [Bias(\hat f(x_0))]^2 ,$$ and
 * Interpretation of Figure 4:
@@ -179,7 +178,10 @@ upper
 ## a) Logistic regression
 * We want to show that $logit(p_i) = log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i = \frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}$. Thus, we get:
 $$
-log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{1-\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg)= log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{\frac{1}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg) = log \Bigg(exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \Bigg) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}.
+\begin{split}
+log \Big(\frac{p_i}{1-p_i}\Big) &= log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{1-\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg)= log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{\frac{1}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg) \\ 
+&= log \Bigg(exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \Bigg) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}.
+\end{split}
 $$
 And we get $log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, which is a linear function.
 ```{r, echo=FALSE}
@@ -209,14 +211,17 @@ a = coef(fit)[1]
 b = coef(fit)[2]
 c = coef(fit)[3]
 g1 = ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=3)+geom_abline(slope=b/(-c),intercept=a/(-c))
-g1 = g1 + ggtitle("train and test and logistic boundary")
+g1 = g1 + ggtitle("Train and logistic boundary")
 g1
 summary(fit)
 ```
 * Using the summary output, we can get the coefficients $\beta_0$, $\beta_1$ and $\beta_2$. Thus by using the formula:
-\begin{equation}
-P(Y=1|x_1 = 17, x_2=3) = \frac{exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)}{1+exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)} = \frac{exp( 7.3143 + 0.1332*17 - 2.3361*3)}{1+exp( 7.3143 + 0.1332*17 - 2.3361*3)} = \frac{exp(2.5704)}{1+exp(2.5704)}=0.9289.
-\end{equation}
+$$
+\begin{split}
+P(Y=1|x_1 = 17, x_2=3) &= \frac{exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)}{1+exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)} = \frac{exp( 7.3143 + 0.1332*17 - 2.3361*3)}{1+exp( 7.3143 + 0.1332*17 - 2.3361*3)} \\ 
+& = \frac{exp(2.5704)}{1+exp(2.5704)}=0.9289.
+\end{split}
+$$
 This result can be interpreted as the probability for a observation to be in class $Y=1$ given the variable values $x_1 = 17$ and $x_2=3$.
 
 ```{r}
@@ -236,9 +241,9 @@ spec
   They both obtain relativly large values, and one can therefor argue that the classification works pretty good. Similar values for the sensitivity and the spesificity suggests that the classification does not prefer or default to one class, which in this case as discussed above is 
 
 ## b) K-nearest neighbor classifier
-\begin{equation}
-Pr(Y=||X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
-\end{equation}
+$$
+Pr(Y=j|X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
+$$
 * Given the point $x_0$, the equation finds the K nearest points in the dataset, and count the most frequent class among the neigbhours. The right side of the equation finds the precentage of the neighbours which belong to class j, and based on that, we take a decision whether $x_=$ should be in class j or not. 
 ```{r, echo=FALSE, warning=FALSE}
 library(class)
@@ -382,7 +387,7 @@ leftside=sum5-sum4
 rightside=sum1+sum3-sum2
 slope1=-leftside[1]/leftside[2]
 intercept1=rightside/leftside[2]
-lda_manual=ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_point(data=test, shape=4)+ geom_abline(slope=slope1, intercept=intercept1)
+lda_manual=ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_point(data=test, shape=4)+ geom_abline(slope=slope1, intercept=intercept1) + ggtitle("Train and test and logistic boundary")
 lda_manual
 
 ```
