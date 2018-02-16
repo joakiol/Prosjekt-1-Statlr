@@ -18,7 +18,7 @@ knitr::opts_chunk$set(message =FALSE)
 ```
 
 
-# Problem 1 - Core concepts in statistical learning [2 points]
+# Problem 1 - Core concepts in statistical learning
 
 ## a) Training and test MSE
 
@@ -447,16 +447,19 @@ This result is quite equal to the earlier results from logistic regression and K
 library(pROC)
 
 glmroc = roc(response=test$y,predictor=prob)
-auc(glmroc)
 KNN3roc=roc(response=test$y,predictor=KNN3prob)
-auc(KNN3roc)
 ltrain=lda(y~x1+x2,data=train)
 lpred=predict(object = ltrain, newdata = test)$posterior[,1]
 lroc=roc(response=test$y,lpred)
-auc(lroc)
 plot(glmroc)
 lines(KNN3roc, col='blue')
 lines(lroc, col='red')
 points(spec3, sens3)
 ```
-* In this plot, black line is the ROC for logistic regression, blue line is the KNN (with K=3) and red line is the LDA.
+* In this plot, black line is the ROC for logistic regression, blue line is the KNN (with K=3) and red line is the LDA. The AUC's printed in the same order below:
+
+```{r,echo=FALSE, eval=TRUE}
+auc(glmroc)
+auc(KNN3roc)
+auc(lroc)
+```
