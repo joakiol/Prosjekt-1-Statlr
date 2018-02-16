@@ -1,5 +1,6 @@
 ---
-title: 'Compulsory exercise 1: Group X'
+
+title: 'Compulsory exercise 1: Group 3'
 author: "Joakim Olsen, Mathias Opland and Lars Fredrik Espeland"
 date: "16.02.2018"
 output:
@@ -254,7 +255,9 @@ $$
 Pr(Y=j|X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
 $$
 
+
 * Given the point $x_0$, the equation finds the K nearest points in the dataset, and count the most frequent class among the neighbours. The right hand side of the equation finds the percentage of the neighbours which belong to class j, and based on that, we take a decision whether $x_0=$ should be in class j or not. 
+
 ```{r, echo=FALSE, warning=FALSE}
 library(class)
 library(dplyr)
