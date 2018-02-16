@@ -8,7 +8,7 @@ output:
     df_print: paged
 subtitle: TMA4268 Statistical Learning V2018
 editor_options:
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
   
 ```{r setup, include=FALSE}
