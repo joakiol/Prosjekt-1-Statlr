@@ -26,8 +26,8 @@ knitr::opts_chunk$set(message =FALSE)
 
 * A small value of K will give a more flexible fit, which has low bias but high variance. As mentioned above, K=1 will give point-to-point plots, which is an overfit. At K=2 we get a lower variance, and there is no sign of underfitting the curve. At K=10 the variance is notably lower, but the plot shows signs of underfitting and a low flexibility. Continuing the trend, at K=25 we get a clearly underfitted and inflexible result.
 
-* The MSE for the training sets shows how close the predicted curve is to the points it is based on. As we can see, at K=1 the MSE is zero, which is a clear sign of overfitting. The MSE just increase as K increases, which indicates low flexibility. There is by this plot hard to say where the overfitting stops and the low flexibility starts, and thus hard to conclude what's the best value for K. 
-One the other hand, the MSE for the test sets does decrease for the first K's, and then increases. The test set isn't affected by overfitting the same way, and will therefor show the best value for K much clearer. 
+* The MSE for the training sets show how close the predicted curve is to the points it is based on. As we can see, at K=1 the MSE is zero, which is a clear sign of overfitting. The MSE just increases as K increases, which indicates low flexibility. There is by this plot hard to say where the overfitting stops and the low flexibility starts, and thus hard to conclude what is the best value for K. 
+On the other hand, the MSE for the test set decreases for the first K's, and then increases. The test set is not affected by overfitting in the same way, and will therefore show the best value for K much clearer. 
 
 * The lowest point, being around K=5 here, is where the error is lowest and would be our choice for K.
 
@@ -35,15 +35,15 @@ One the other hand, the MSE for the test sets does decrease for the first K's, a
 
 ## b) Bias-variance trade-off
 
-* You start by fitting a curve to the training data sets by the KNN method. Then you can express the fittet curve as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
+* You start by fitting a curve to the training data sets by the KNN method. Then you can express the fitted curve as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
 $$ E[Y- \hat f (x_0)]^2 .$$ Then we decompose the MSE into three terms:
 $$E[(Y- \hat f (x_0))^2] = Var( \epsilon ) + Var[\hat f  (x_0)] + [Bias(\hat f(x_0))]^2 ,$$ and
 * Interpretation of Figure 4:
-    + The squared bias decreases as the flexible increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systmatic difference. As example, in a) when K=61, we will always get a straight line, and differs from the true values.
-    + The variance decreases as K increases, which is due to more points taken account for, and less difference from each training set to the others.
-    + The irreducible error isn't dependent on the values of K, and is therefore constant.
+    + The squared bias decreases as the flexibility increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systematic difference. As example, in a) when K=61, we will always get a straight line, which differs from the true values.
+    + The variance decreases as K increases, since more points are taken account for, and the difference from each training set to the others is less.
+    + The irreducible error is not dependent on the values of K, and is therefore constant.
     
-* Based on the sum of the errors, the lowest error is K=3 (but nearly the same as K=5). Thus this will be our choice for K as this will give the most accurate model. This agrees fairly well with what we found in a), and our conclusion would be that a K between 3 and 5 would give the best results.
+* Based on the sum of the errors, the lowest error is for K=3 (but nearly the same as K=5). Thus this will be our choice for K as this will give the most accurate model. This agrees fairly well with what we found in a), and our conclusion would be that a K between 3 and 5 would give the best results.
 
 # Problem 2 - Linear regression
 
@@ -199,9 +199,12 @@ train = wine[ord[((n/2)+1):n],]
 fit = glm(y ~ ., data = train, family = "binomial")
 coef(fit)
 ```
-* There is no obivous interpretation of the $\hat{\beta_1}$ and $\hat{\beta_2}$ since a increase of one unit in $\hat{\beta}$ does not give a consistent increase or decrease for all values of $x_1$. It is however easier to look at the odds $\frac{p_i}{1-p_i}$, which is bounded from below, but not above. The interpretation of the odds in this example is the conditional probability that a wine is in class 1, divided by the probability that the wine is in class 0 for the covariates $x_1$ and $x_2$. Moreocer a increase from $x_{1i}$ to $x_{1i} + 1$, the odds are multiplied by $e^{\beta_1}$, which gives us a more intuitive interpretation of $\hat{\beta_1}$. The case is similar for $\hat{\beta_2}$ for a increase in $x_{2i}$, and we can see that $\beta < 0$ the odds will decrease, for $\beta_1 = 0$ the odds will stay the same, and for $\beta_1 >0$, the odds will increase.
+* There is no obivous interpretation of the $\hat{\beta_1}$ and $\hat{\beta_2}$ since an increase of one unit in $\hat{\beta}$ does not give a consistent increase or decrease for all values of $x_1$. It is however easier to look at the odds $\frac{p_i}{1-p_i}$, which is bounded from below, but not above. The interpretation of the odds in this example is the conditional probability that a wine is in class 1, divided by the probability that the wine is in class 0 for the covariates $x_1$ and $x_2$. Moreover, if there is an increase from $x_{1i}$ to $x_{1i} + 1$, the odds are multiplied by $e^{\beta_1}$, which gives us a more intuitive interpretation of $\hat{\beta_1}$. The case is similar for $\hat{\beta_2}$ for an increase in $x_{2i}$, and we can see that for $\beta < 0$ the odds will decrease, for $\beta_1 = 0$ the odds will stay the same, and for $\beta_1 >0$, the odds will increase.
 
-* Since the odds is linear (as shown before), we have a linear class boundary. From earlier, we have: $$log \bigg(\frac{Pr(Y_i=1|X=x_i)}{Pr(Y_i=0|X=x_i)} \bigg) = log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$$, where we want to fit the coefficients by maximaizing the likelihood. Then, where $\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} = 0$, we have the class boundary.
+
+* Since the odds is linear (as shown before), we have a linear class boundary. From earlier, we have: $log \bigg(\frac{Pr(Y_i=1|X=x_i)}{Pr(Y_i=0|X=x_i)} \bigg) = log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, where we want to fit the coefficients by maximizing the likelihood. Then, where $\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} = 0$, we have the class boundary.
+
+
 ```{r,echo=FALSE}
 a = coef(fit)[1]
 b = coef(fit)[2]
@@ -236,7 +239,8 @@ pred = ifelse(prob > 0.5, 1, 0)
 t = table (pred, test$y)
 t
 ```
-* The sensitivity is the propotion of correctly classified positive observations, and the specificity is the propotion of correctly classed negative observations. Thus, the values lies between 0 and 1, and the goal is to obtain high values. It's important to note that large value for only one of them is not necessarily any good. For example, a method which just puts every observation in class 1 will have sensitivity 1, but specificity 0. Therefore, we want high values (close to one), but balanced as well. There are cases where there is more important that we get the classification of one class right, than the other, for which we can sacrifice the balance to obtain either a high sensitivity or a high spesificity (example would be to avoid a Type 1 error, for which we can sacrifice the probabolity for actually rejecting a fals $H_0$). That being said, in this case there is no worse to classify a 1-wine as a 0-wine, than the opposite.
+
+* The sensitivity is the proportion of correctly classified positive observations, and the specificity is the proportion of correctly classified negative observations. Thus, the values are between 0 and 1, and the goal is to obtain high values. It is important to note that a large value for only one of them is not necessarily any good. For example, a method which just puts every observation in class 1 will have sensitivity 1, but specificity 0. Therefore, we want high values (close to one), but balanced as well. There are cases where it is more important that we get the classification of one class right than the other, for which we can sacrifice the balance to obtain either a high sensitivity or a high specificity (example would be to avoid a Type 1 error, for which we can sacrifice the probability for actually rejecting a false $H_0$). That being said, in this case there is no worse to classify a 1-wine as a 0-wine, than the opposite.
 ```{r, echo=FALSE}
 sens=t[2,2]/sum(t[2,])
 spec=t[1,1]/sum(t[1,])
