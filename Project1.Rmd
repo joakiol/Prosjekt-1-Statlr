@@ -39,11 +39,11 @@ On the other hand, the MSE for the test set decreases for the first K's, and the
 $$ E[Y- \hat f (x_0)]^2 .$$ Then we decompose the MSE into three terms:
 $$E[(Y- \hat f (x_0))^2] = Var( \epsilon ) + Var[\hat f  (x_0)] + [Bias(\hat f(x_0))]^2 ,$$ and
 * Interpretation of Figure 4:
-    + The squared bias decreases as the flexibility increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systematic difference. As example, in a) when K=61, we will always get a straight line, and differs from the true values.
-    + The variance decreases as K increases, which is due to more points taken account for, and less difference from each training set to the others.
-    + The irreducible error isn't dependent on the values of K, and is therefore constant.
+    + The squared bias decreases as the flexibility increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systematic difference. As example, in a) when K=61, we will always get a straight line, which differs from the true values.
+    + The variance decreases as K increases, since more points are taken account for, and the difference from each training set to the others is less.
+    + The irreducible error is not dependent on the values of K, and is therefore constant.
     
-* Based on the sum of the errors, the lowest error is K=3 (but nearly the same as K=5). Thus this will be our choice for K as this will give the most accurate model. This agrees fairly well with what we found in a), and our conclusion would be that a K between 3 and 5 would give the best results.
+* Based on the sum of the errors, the lowest error is for K=3 (but nearly the same as K=5). Thus this will be our choice for K as this will give the most accurate model. This agrees fairly well with what we found in a), and our conclusion would be that a K between 3 and 5 would give the best results.
 
 # Problem 2 - Linear regression
 
@@ -199,9 +199,9 @@ train = wine[ord[((n/2)+1):n],]
 fit = glm(y ~ ., data = train, family = "binomial")
 coef(fit)
 ```
-* There is no obivous interpretation of the $\hat{\beta_1}$ and $\hat{\beta_2}$ since a increase of one unit in $\hat{\beta}$ does not give a consistent increase or decrease for all values of $x_1$. It is however easier to look at the odds $\frac{p_i}{1-p_i}$, which is bounded from below, but not above. The interpretation of the odds in this example is the conditional probability that a wine is in class 1, divided by the probability that the wine is in class 0 for the covariates $x_1$ and $x_2$. Moreocer a increase from $x_{1i}$ to $x_{1i} + 1$, the odds are multiplied by $e^{\beta_1}$, which gives us a more intuitive interpretation of $\hat{\beta_1}$. The case is similar for $\hat{\beta_2}$ for a increase in $x_{2i}$, and we can see that $\beta < 0$ the odds will decrease, for $\beta_1 = 0$ the odds will stay the same, and for $\beta_1 >0$, the odds will increase.
+* There is no obivous interpretation of the $\hat{\beta_1}$ and $\hat{\beta_2}$ since an increase of one unit in $\hat{\beta}$ does not give a consistent increase or decrease for all values of $x_1$. It is however easier to look at the odds $\frac{p_i}{1-p_i}$, which is bounded from below, but not above. The interpretation of the odds in this example is the conditional probability that a wine is in class 1, divided by the probability that the wine is in class 0 for the covariates $x_1$ and $x_2$. Moreover, if there is an increase from $x_{1i}$ to $x_{1i} + 1$, the odds are multiplied by $e^{\beta_1}$, which gives us a more intuitive interpretation of $\hat{\beta_1}$. The case is similar for $\hat{\beta_2}$ for an increase in $x_{2i}$, and we can see that for $\beta < 0$ the odds will decrease, for $\beta_1 = 0$ the odds will stay the same, and for $\beta_1 >0$, the odds will increase.
 
-* Since the odds is linear (as shown before), we have a linear class boundary. From earlier, we have: $log \bigg(\frac{Pr(Y_i=1|X=x_i)}{Pr(Y_i=0|X=x_i)} \bigg) = log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, where we want to fit the coefficients by maximaizing the likelihood. Then, where $\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} = 0$, we have the class boundary.
+* Since the odds is linear (as shown before), we have a linear class boundary. From earlier, we have: $log \bigg(\frac{Pr(Y_i=1|X=x_i)}{Pr(Y_i=0|X=x_i)} \bigg) = log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, where we want to fit the coefficients by maximizing the likelihood. Then, where $\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} = 0$, we have the class boundary.
 ```{r,echo=FALSE}
 a = coef(fit)[1]
 b = coef(fit)[2]
@@ -218,7 +218,7 @@ P(Y=1|x_1 = 17, x_2=3) &= \frac{exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)}{1+exp(
 & = \frac{exp(2.5704)}{1+exp(2.5704)}=0.9289.
 \end{split}
 $$
-This result can be interpreted as the probability for a observation to be in class $Y=1$ given the variable values $x_1 = 17$ and $x_2=3$.
+This result can be interpreted as the probability for an observation to be in class $Y=1$ given the variable values $x_1 = 17$ and $x_2=3$.
 
 ```{r}
 
@@ -227,7 +227,7 @@ pred = ifelse(prob > 0.5, 1, 0)
 t = table (pred, test$y)
 t
 ```
-* The sensitivity is the propotion of correctly classified positive observations, and the specificity is the propotion of correctly classed positive observations. Thus, the values lies between 0 and 1, and the goal is to obtain high values. It's important to note that large value for only one of them is not necessarily any good. For example, a method which just puts every observation in class 1 will have sensitivity 1, but specificity 0. Therefore, we want high values (close to one), but balanced as well. There are cases where there is more important that we get the classification of one class right, than the other, for which we can sacrifice the balance to obtain either a high sensitivity or a high spesificity (example would be to avoid a Type 1 error, for which we can sacrifice the probabolity for actually rejecting a fals $H_0$). That being said, in this case there is no worse to classify a 1-wine as a 0-wine, than the opposite.
+* The sensitivity is the proportion of correctly classified positive observations, and the specificity is the proportion of correctly classed positive observations. Thus, the values are between 0 and 1, and the goal is to obtain high values. It is important to note that a large value for only one of them is not necessarily any good. For example, a method which just puts every observation in class 1 will have sensitivity 1, but specificity 0. Therefore, we want high values (close to one), but balanced as well. There are cases where it is more important that we get the classification of one class right than the other, for which we can sacrifice the balance to obtain either a high sensitivity or a high specificity (example would be to avoid a Type 1 error, for which we can sacrifice the probability for actually rejecting a false $H_0$). That being said, in this case there is no worse to classify a 1-wine as a 0-wine, than the opposite.
 ```{r, echo=FALSE}
 sens=t[2,2]/sum(t[2,])
 spec=t[1,1]/sum(t[1,])
