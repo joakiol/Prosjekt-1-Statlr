@@ -1,6 +1,7 @@
 ---
+
 title: 'Compulsory exercise 1: Group 3'
-author: "NN1, NN and NN3"
+author: "Joakim Olsen, Mathias Opland and Lars Fredrik Espeland"
 date: "16.02.2018"
 output:
   pdf_document: null
@@ -59,7 +60,7 @@ colnames(data)
 The equation for the fitted `modelA`, where $-\frac{1}{\sqrt{SYSBP}}$ is the response, is 
 $$\boldsymbol{Y}=\boldsymbol{\beta}\boldsymbol{X}+\boldsymbol{\epsilon},$$
 
-where $\boldsymbol{\beta}$ is a vector consisting of the regression parameters corresponding to each covariate, including the intercept, $\beta_0$, and $\boldsymbol{\epsilon}$ is the error term, assumed to be normally distributed with mean 0.
+  where $\boldsymbol{\beta}$ is a vector consisting of the regression parameters corresponding to each covariate, including the intercept, $\beta_0$, and $\boldsymbol{\epsilon}$ is the error term, assumed to be normally distributed with mean 0.
 
 ```{r}
 modelA=lm(-1/sqrt(SYSBP) ~ .,data = data)
@@ -68,7 +69,7 @@ summary(modelA)
 
 * In the summary output, the column with `Estimate` is the estimated values for the coefficients of the model, the $\hat{\beta}'s$. In particular, `Intercept` is the estimate for $\beta_0$. This is the value of the response when all the covariates are 0. In this case, this value is not that meaningful, since it for instance makes no sense to have a person with a BMI of 0. The other estimated coefficients tell us how much we can expect $-\frac{1}{\sqrt{SYSBP}}$ to change given a change in the respective covariate when all the other covariates are fixed. The parameters in $\boldsymbol{\beta}$ can be estimated with maximum likelihood and least squares, which both gives $$\boldsymbol{\hat{\beta}}=(\boldsymbol{X}^T\boldsymbol{X})^{-1}\boldsymbol{X}^T\boldsymbol{Y}.$$
 
-* `Std. Error` is the standard error of the coefficients. These values tell us how close the estimated coefficients are to the true values of the coefficients. The standard error of each estimated coefficient is found by taking the square root of the corresponding term on the diagonal of the covariance matrix $\Sigma = \sigma^2(\boldsymbol{X}^T\boldsymbol{X})$, where $\sigma$ is the variance of the resiudals.
+* `Std. Error` is the standard error of the coefficients. These values tell us how close the estimated coefficients are to the true values of the coefficients. The standard error of each estimated coefficient is found by taking the square root of the corresponding term on the diagonal of the covariance matrix $\Sigma = \sigma^2(\boldsymbol{X}^T\boldsymbol{X})$, where $\sigma^2$ is the variance of the resiudals.
 
 * Further, the values under `t value` tell us how many standard deviations $\beta_i$ is away from 0. For each covariate, we investigate whether there is a relationship between the covariate and the response. This is done through the hypothesis test $H_0: \beta_i = 0$ versus $H_1: \beta_i \neq 0$. Then the t-statistic is calculated by $$t_i = \frac{\hat{\beta_i}-0}{SE(\hat{\beta_i})}.$$
 This is the formula for the t-value of each covariate. We can see that if the t-value is large, the variable is most likely related to the response. 
@@ -105,7 +106,7 @@ modelB=lm(SYSBP ~ .,data = data)
 summary(modelB)
 ```
 
-For this model, the plot of residuals against fitted values and the qq-plot are as follows:
+  For this model, the plot of residuals against fitted values and the qq-plot are as follows:
 
 ```{r,echo=FALSE}
 # residuls vs fitted
@@ -120,19 +121,19 @@ ggplot(modelB, aes(sample = .stdresid)) +
   labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
 ```
 
-The plot of fitted values vs residuals for modelB seems quite similar to the one for modelA. However, although the residuals mostly are spread around a horizontal line, it is seemingly not the case for all the largest and smalles fitted values. It is however difficult to state whether this indicates that the assumption of linear relationship between the response and the covariates does not hold. Also, the residuals in the qq-plot do not quite follow a straight line, so the residuals are probably not Gaussian distributed. 
+  The plot of fitted values vs residuals for modelB seems quite similar to the one for modelA. However, although the residuals mostly are spread around a horizontal line, it is seemingly not the case for all the largest and smalles fitted values. It is however difficult to state whether this indicates that the assumption of linear relationship between the response and the covariates does not hold. Also, the residuals in the qq-plot do not quite follow a straight line, so the residuals are probably not Gaussian distributed. 
 
-In addition, we can do the Anderson-Darling normality test for the two models:
+  In addition, we can do the Anderson-Darling normality test for the two models:
 
 ```{r}
 library(nortest)
 ad.test(rstudent(modelA))
 ad.test(rstudent(modelB))
 ```
+  
+  This test tells us how well the data follow the Gaussian distribution. The better the distribution fits the data, the smaller the p-value will be. From the p-values here, we can clearly conclude that the residuals in modelB are not Gaussian distributed, while the opposite is most likely true in modelA.
 
-This test tells us how well the data follow the Gaussian distribution. The better the distribution fits the data, the smaller the p-value will be. From the p-values here, we can clearly conclude that the residuals in modelB are not Gaussian distributed, while the opposite is most likely true in modelA.
-
-Due to these comparisons, we would prefer modelA if the aim is to make inference about systolic blood pressure. Unlike the residuals in modelB, the transformation of the response to $-\frac{1}{\sqrt{SYSBP}}$ gives residuals which are almost Gaussian distributed, so this one is preferable. 
+  Due to these comparisons, we would prefer modelA if the aim is to make inference about systolic blood pressure. Unlike the residuals in modelB, the transformation of the response to $-\frac{1}{\sqrt{SYSBP}}$ gives residuals which are almost Gaussian distributed, so this one is preferable. 
 
 
 ## c) Confidence interval and hypothesis test
@@ -245,14 +246,18 @@ spec=t[1,1]/sum(t[1,])
 sens
 spec
 ```
-  They both obtain relativly large values, and one can therefor argue that the classification works pretty good. Similar values for the sensitivity and the spesificity suggests that the classification does not prefer or default to one class, which in this case as discussed above is desirable. 
+
+  They both obtain relatively large values, and one can therefore argue that the classification works pretty good. Similar values for the sensitivity and the specificity suggest that the classification does not prefer or default to one class, which in this case as discussed above is desirable.
+
 
 ## b) K-nearest neighbor classifier
 $$
 Pr(Y=j|X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
 $$
 
-* Given the point $x_0$, the equation finds the K nearest points in the dataset, and count the most frequent class among the neigbhours. The right side of the equation finds the precentage of the neighbours which belong to class j, and based on that, we take a decision whether $x_=$ should be in class j or not. 
+
+* Given the point $x_0$, the equation finds the K nearest points in the dataset, and count the most frequent class among the neighbours. The right hand side of the equation finds the percentage of the neighbours which belong to class j, and based on that, we take a decision whether $x_0=$ should be in class j or not. 
+
 ```{r, echo=FALSE, warning=FALSE}
 library(class)
 library(dplyr)
@@ -281,21 +286,21 @@ sens9
 spec9
 
 ```
-* As we can see from the data, the sensitivity for K=3 is higher than for K=9, and the specificity is equal. That happens because the neighbours in k=9 becomes further away, and even though the formula take in account for more points, the points isn't as local anymore. Thus the bias increases, and the misclassification increases as well. The best value for K really depends on the number of points and how they are distributed, but as shown in 3d), one can calculate the ROC curve, and find the optimal K. Since there is a bias-variance trade-off, where low values for K will give high variance and high values for K will give a high bias, the optimal point will be where they togheter give the lowest mean squared error (MSE). 
+* As we can see from the data, the sensitivity for K=3 is higher than for K=9, and the specificity is equal. That happens because the neighbours in K=9 becomes further away, and even though the formula takes account for more points, the points are not as local anymore. Thus the bias increases, and the misclassification increases as well. The best value for K really depends on the number of points and how they are distributed, but as shown in 3d), one can calculate the ROC curve, and find the optimal K. Since there is a bias-variance trade-off, where low values for K will give high variance and high values for K will give a high bias, the optimal point will be where they together give the lowest mean squared error (MSE). 
 
 ## c) LDA (& QDA)
- The expression from the task is found by assuming the classes are normal distributed according to the function  
+ The expression from the task is found by assuming the classes are normally distributed according to the function  
 
 
 $$f_k(x)=\frac{1}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2}}e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_k})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_k})}.$$ 
 The posterior probability is the calculated as 
 $$p_k(x)=Pr(Y=k|\boldsymbol{X}=\boldsymbol{x})=\frac{Pr(\boldsymbol{X}=\boldsymbol{x}|Y=k)Pr(Y=k)}{Pr(\boldsymbol{X}=\boldsymbol{x})}=\frac{\pi_kf_k(\boldsymbol{x})}{\sum_{l=1}^K\pi_lf_l(\boldsymbol{x})}$$
 
-* Here, $\pi_k=Pr(Y=k)$, which is the probability that a given wine sample $Y$ belongs to class $k$. $\boldsymbol{\mu_k}$ is the vector containing the expected values of the parametres, which is color intensity and alcalinity of ash in this task. $\boldsymbol{\Sigma}$ is the covariance matrix for the parametres, which contains the variance of the parametres and the covariance between them. $f_k(x)$ is as mentioned the probability density function for a given class, which again is the conditional probability of $x$ with a given class, $f_k(x)=Pr(\boldsymbol{X}=\boldsymbol{x}|Y=k)$. 
+* Here, $\pi_k=Pr(Y=k)$, which is the probability that a given wine sample $Y$ belongs to class $k$. $\boldsymbol{\mu_k}$ is the vector containing the expected values of the parameters, which is color intensity and alcalinity of ash in this task. $\boldsymbol{\Sigma}$ is the covariance matrix for the parameters, which contains the variance of the parameters and the covariance between them. $f_k(x)$ is as mentioned the probability density function for a given class, which again is the conditional probability of $x$ with a given class, $f_k(x)=Pr(\boldsymbol{X}=\boldsymbol{x}|Y=k)$. 
 
-* To estimate $\pi_k$ we can use the the total number of samples in the training set $n$, and the number of samples belonging to the requested class, $n_k$. We can then use te estimator $\hat{\pi}_k=\frac{n_k}{n}$. $\mu_k$ can be estimated simply using a sample mean from all the samples belonging to the requested class. The estimator is then calculated as $\hat{\mu}_k=\frac{1}{n_k}\sum_{i:y_i=k}x_i$. To estimate the covariance matrix, the class-specific covariance matrices can be calculated as
-$$\hat{\boldsymbol{\Sigma}}_k=\frac{1}{n_k-1}\sum_{i:y_i=k}(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)^T$$
-The true covariance matrix is the found by summing over the difference classes using wheighs according to the fraction of samples in the belonging class. We then get 
+* To estimate $\pi_k$ we can use the total number of samples in the training set $n$, and the number of samples belonging to the requested class, $n_k$. We can then use the estimator $\hat{\pi}_k=\frac{n_k}{n}$. $\mu_k$ can be estimated simply using a sample mean from all the samples belonging to the requested class. The estimator is then calculated as $\hat{\mu}_k=\frac{1}{n_k}\sum_{i:y_i=k}x_i$. To estimate the covariance matrix, the class-specific covariance matrices can be calculated as
+$$\hat{\boldsymbol{\Sigma}}_k=\frac{1}{n_k-1}\sum_{i:y_i=k}(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)^T.$$
+The true covariance matrix is then found by summing over the different classes using weights according to the fraction of samples in the belonging class. We then get 
 $$\hat{\boldsymbol{\Sigma}}=\sum_{k=1}^K \frac{n_k-1}{n-K}\cdot \hat{\boldsymbol{\Sigma}}_k.$$ 
 Calculations for the training data is done in R, resulting in values $\pi_0=0.45$, $\pi_1=0.55$, $\boldsymbol{\mu_0}=(17.26 , 5.58)^T$, $\boldsymbol{\mu_1}=(20.18, 2.97)^T$ and 
 $$
@@ -327,7 +332,7 @@ We rewrite this as
 $$\frac{\pi_0 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}=\frac{\pi_1 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}$$
 Since the denominators are equal on both sides, we can disregard them. By taking logarithms on both sides we achieve
 $$-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0}) + \log{\pi_0}=-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1}) + \log{\pi_1}$$
-We now complete the miltiplications, and remove the equal parts on each side to get:
+We now complete the multiplications, and remove the equal parts on each side to get:
 $$\frac{1}{2}(\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} +\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x} - \boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}) + \log{\pi_0}=\frac{1}{2}(\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} +\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x} - \boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}) + \log{\pi_1}$$
 Now we know the covariance matrix is symmetric positive definite. We therefore know $\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k} =\boldsymbol{\mu_k}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x}$. We therefore finally get 
 $$\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x}),$$
@@ -362,7 +367,7 @@ $$\delta_k(\boldsymbol{x})=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\
 * To find the class boundary formula, we need to solve the equation $\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x})$. We get 
 $$\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}- \frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} + \log{\pi_0}=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}- \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\pi_1}$$
 $$\boldsymbol{x}^T(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} - \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\frac{\pi_1}{\pi_0}}$$
-We use estimators for the parametres as discussed earlier in this task. The necessary values are calculated in R, and we get $\log{\frac{\pi_1}{\pi_0}}=0.216$, $\frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}=-41.1$, $\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}=-49.2$ and $(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=(-0.17, 2.63)^T$.
+We use estimators for the parameters as discussed earlier in this task. The necessary values are calculated in R, and we get $\log{\frac{\pi_1}{\pi_0}}=0.216$, $\frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}=-41.1$, $\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}=-49.2$ and $(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=(-0.17, 2.63)^T$.
 We then get the equation 
 $$2.628x_2-0.164x_1=8.368 \implies \\ x_2 = 0.0625x_1 + 3.184$$
 
@@ -396,19 +401,21 @@ row3 = c("True +", 5, 30,35)
 row4 = c("Total", 29, 36," ")
 kable(rbind(row1, row2, row3,row4), row.names=FALSE)
 ```
+* The table above shows the confusion table for the test data, based on the LDA from the training data.
+
 * The sensitivity is given by 
 $$\frac{\text{True Positive}}{\text{Condition Positive}}=\frac{24}{30}=0.8,$$ 
 while the specificity is given by
 $$\frac{\text{True Negative}}{\text{Condition Negative}}=\frac{30}{35}=0.86.$$
-We want high specifity and seinsitivity, and we see values are fairly close to 1, which mean we get many correct predictions. It still seems like we will do mistakes every now and then, as there are a considerable number of mistakes. 
+We want high specificity and sensitivity, and we see that values are fairly close to 1, which means we get many correct predictions. It still seems like we will do mistakes every now and then, as there are a considerable number of mistakes. 
 
 * In QDA, the covariance matrices for the different classes are allowed to be different. This makes this method more complex, but also more flexible. The decision boundaries will now become quadratic functions of $\boldsymbol{x}$. 
 
 ## d) Compare classifiers
 
-* For logistic regression we got specificity 0.833 and sensitivity 0.857. For KNN with our preferred $K=3$, we got specificity 0.964  and sensitivity 0.919. For lda we got 0.800 and specificity 0.857. Since we want high specificity and sensitivity, our preferred method when using 0.5 as cut-off is KNN. This method performs considerably better than the other two methods, which are more equal, though logistic regression seems to be slightly better. ha med dette?:Note however that the training and test sets are not that big, and that might influence which method performs better. Our result is still an indication that a strictly linear model might not be optimal for the wine classification problem. 
+* For logistic regression we got specificity 0.833 and sensitivity 0.857. For KNN with our preferred $K=3$, we got specificity 0.964  and sensitivity 0.919. For LDA we got 0.800 and specificity 0.857. Since we want high specificity and sensitivity, our preferred method when using 0.5 as cut-off is KNN. This method performs considerably better than the other two methods, which are more equal, though logistic regression seems to be slightly better. Our result is still an indication that a strictly linear model might not be optimal for the wine classification problem. 
 
-* The following three plots show ROC curves for specificity and sensitivity, and also prints the area under the curves. From the last point we concluded that KNN was the best method for cut-off equal to 0.5. We do however see that the area under the curve is smaller for KNN than for the other methods. We also see on the plot the reason for this, assensitivity when the cut-off is low or high, and compared to the other methods, in the high or low cut-off areas the specificity/sensitivity is lower. It therefore seems like the other methods would work better for high or low cut-off, compared to KNN. Logistic regression and lda performs quite similar, which is natural as they make the both linearity-assumption, and the solutions are quite similar. 
+* The following three plots show ROC curves for specificity and sensitivity, and also prints the area under the curves. From the last point we concluded that KNN was the best method for cut-off equal to 0.5. We do however see that the area under the curve is smaller for KNN than for the other methods. We also see on the plot the reason for this, as sensitivity when the cut-off is low or high, and compared to the other methods, in the high or low cut-off areas the specificity/sensitivity is lower. It therefore seems like the other methods would work better for high or low cut-off, compared to KNN. Logistic regression and LDA performs quite similar, which is natural as they make the both linearity-assumption, and the solutions are quite similar. 
  the line in the lower left corner is less vertical, and the line in the upper right corner is less horizontal. This represents the specificity vs 
 
 ```{r,echo=FALSE, eval=TRUE}
