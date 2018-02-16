@@ -453,10 +453,10 @@ auc(KNN3roc)
 ltrain=lda(y~x1+x2,data=train)
 lpred=predict(object = ltrain, newdata = test)$posterior[,1]
 lroc=roc(response=test$y,lpred)
+auc(lroc)
 plot(glmroc)
 lines(KNN3roc, col='blue')
 lines(lroc, col='red')
 points(spec3, sens3)
-auc(lroc)
 ```
 * In this plot, black line is the ROC for logistic regression, blue line is the KNN (with K=3) and red line is the LDA.
