@@ -1,7 +1,7 @@
 ---
 title: 'Compulsory exercise 1: Group X'
 author: "NN1, NN and NN3"
-date: "Date when you hand in"
+date: "16.02.2018"
 output:
   pdf_document: null
   html_document:
@@ -201,7 +201,10 @@ coef(fit)
 ```
 * There is no obivous interpretation of the $\hat{\beta_1}$ and $\hat{\beta_2}$ since an increase of one unit in $\hat{\beta}$ does not give a consistent increase or decrease for all values of $x_1$. It is however easier to look at the odds $\frac{p_i}{1-p_i}$, which is bounded from below, but not above. The interpretation of the odds in this example is the conditional probability that a wine is in class 1, divided by the probability that the wine is in class 0 for the covariates $x_1$ and $x_2$. Moreover, if there is an increase from $x_{1i}$ to $x_{1i} + 1$, the odds are multiplied by $e^{\beta_1}$, which gives us a more intuitive interpretation of $\hat{\beta_1}$. The case is similar for $\hat{\beta_2}$ for an increase in $x_{2i}$, and we can see that for $\beta < 0$ the odds will decrease, for $\beta_1 = 0$ the odds will stay the same, and for $\beta_1 >0$, the odds will increase.
 
+
 * Since the odds is linear (as shown before), we have a linear class boundary. From earlier, we have: $log \bigg(\frac{Pr(Y_i=1|X=x_i)}{Pr(Y_i=0|X=x_i)} \bigg) = log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, where we want to fit the coefficients by maximizing the likelihood. Then, where $\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} = 0$, we have the class boundary.
+
+
 ```{r,echo=FALSE}
 a = coef(fit)[1]
 b = coef(fit)[2]
