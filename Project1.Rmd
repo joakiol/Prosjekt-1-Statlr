@@ -1,6 +1,6 @@
 ---
 title: 'Compulsory exercise 1: Group X'
-author: "NN1, NN and NN3"
+author: "Joakim Olsen, Mathias Opland and Lars Fredrik Espeland"
 date: "16.02.2018"
 output:
   pdf_document: null
@@ -59,7 +59,7 @@ colnames(data)
 The equation for the fitted `modelA`, where $-\frac{1}{\sqrt{SYSBP}}$ is the response, is 
 $$\boldsymbol{Y}=\boldsymbol{\beta}\boldsymbol{X}+\boldsymbol{\epsilon},$$
 
-where $\boldsymbol{\beta}$ is a vector consisting of the regression parameters corresponding to each covariate, including the intercept, $\beta_0$, and $\boldsymbol{\epsilon}$ is the error term, assumed to be normally distributed with mean 0.
+  where $\boldsymbol{\beta}$ is a vector consisting of the regression parameters corresponding to each covariate, including the intercept, $\beta_0$, and $\boldsymbol{\epsilon}$ is the error term, assumed to be normally distributed with mean 0.
 
 ```{r}
 modelA=lm(-1/sqrt(SYSBP) ~ .,data = data)
@@ -105,7 +105,7 @@ modelB=lm(SYSBP ~ .,data = data)
 summary(modelB)
 ```
 
-For this model, the plot of residuals against fitted values and the qq-plot are as follows:
+  For this model, the plot of residuals against fitted values and the qq-plot are as follows:
 
 ```{r,echo=FALSE}
 # residuls vs fitted
@@ -120,19 +120,19 @@ ggplot(modelB, aes(sample = .stdresid)) +
   labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
 ```
 
-The plot of fitted values vs residuals for modelB seems quite similar to the one for modelA. However, although the residuals mostly are spread around a horizontal line, it is seemingly not the case for all the largest and smalles fitted values. It is however difficult to state whether this indicates that the assumption of linear relationship between the response and the covariates does not hold. Also, the residuals in the qq-plot do not quite follow a straight line, so the residuals are probably not Gaussian distributed. 
+  The plot of fitted values vs residuals for modelB seems quite similar to the one for modelA. However, although the residuals mostly are spread around a horizontal line, it is seemingly not the case for all the largest and smalles fitted values. It is however difficult to state whether this indicates that the assumption of linear relationship between the response and the covariates does not hold. Also, the residuals in the qq-plot do not quite follow a straight line, so the residuals are probably not Gaussian distributed. 
 
-In addition, we can do the Anderson-Darling normality test for the two models:
+  In addition, we can do the Anderson-Darling normality test for the two models:
 
 ```{r}
 library(nortest)
 ad.test(rstudent(modelA))
 ad.test(rstudent(modelB))
 ```
+  
+  This test tells us how well the data follow the Gaussian distribution. The better the distribution fits the data, the smaller the p-value will be. From the p-values here, we can clearly conclude that the residuals in modelB are not Gaussian distributed, while the opposite is most likely true in modelA.
 
-This test tells us how well the data follow the Gaussian distribution. The better the distribution fits the data, the smaller the p-value will be. From the p-values here, we can clearly conclude that the residuals in modelB are not Gaussian distributed, while the opposite is most likely true in modelA.
-
-Due to these comparisons, we would prefer modelA if the aim is to make inference about systolic blood pressure. Unlike the residuals in modelB, the transformation of the response to $-\frac{1}{\sqrt{SYSBP}}$ gives residuals which are almost Gaussian distributed, so this one is preferable. 
+  Due to these comparisons, we would prefer modelA if the aim is to make inference about systolic blood pressure. Unlike the residuals in modelB, the transformation of the response to $-\frac{1}{\sqrt{SYSBP}}$ gives residuals which are almost Gaussian distributed, so this one is preferable. 
 
 
 ## c) Confidence interval and hypothesis test
@@ -245,17 +245,15 @@ spec=t[1,1]/sum(t[1,])
 sens
 spec
 ```
-<<<<<<< HEAD
-  
-They both obtain relatively large values, and one can therefore argue that the classification works pretty good. Similar values for the sensitivity and the specificity suggest that the classification does not prefer or default to one class, which in this case as discussed above is 
-=======
-  They both obtain relativly large values, and one can therefor argue that the classification works pretty good. Similar values for the sensitivity and the spesificity suggests that the classification does not prefer or default to one class, which in this case as discussed above is desirable. 
->>>>>>> ff9340d9cfa0fe410f09ce3d4906ce67032f2ef5
+
+  They both obtain relatively large values, and one can therefore argue that the classification works pretty good. Similar values for the sensitivity and the specificity suggest that the classification does not prefer or default to one class, which in this case as discussed above is desirable.
+
 
 ## b) K-nearest neighbor classifier
 $$
 Pr(Y=j|X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
 $$
+
 * Given the point $x_0$, the equation finds the K nearest points in the dataset, and count the most frequent class among the neighbours. The right hand side of the equation finds the percentage of the neighbours which belong to class j, and based on that, we take a decision whether $x_0=$ should be in class j or not. 
 ```{r, echo=FALSE, warning=FALSE}
 library(class)
