@@ -35,10 +35,10 @@ On the other hand, the MSE for the test set decreases for the first K's, and the
 
 ## b) Bias-variance trade-off
 
-* (You start by fitting a curve to the training data sets by the KNN method. Then you can express the fitted curve as) We have a true underlying curve expressed as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
+* We have a true underlying curve expressed as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
 $$ E[Y- \hat f (x_0)]^2 .$$ Then we decompose the MSE into three terms:
-$$E[(Y- \hat f (x_0))^2] = Var( \epsilon ) + Var[\hat f  (x_0)] + [Bias(\hat f(x_0))]^2.$$ $Var[\hat f  (x_0)]$ can be found by taking a sample variance over the M repeated training sets. This variance will be based on the sample mean from the data sets, and is therefore unrelated to the true underlying curve. The bias is however calculated as the difference between the sample mean and the true underlying curve, and this picks up the closeness to the true underlying curve.  
-$$
+$$E[(Y- \hat f (x_0))^2] = Var( \epsilon ) + Var[\hat f  (x_0)] + [Bias(\hat f(x_0))]^2.$$ $Var[\hat f  (x_0)]$ can be found by taking a sample variance over the M repeated training sets. This variance will be based on the sample mean from the data sets, and is therefore unrelated to the true underlying curve. The bias is however calculated as the difference between the sample mean and the true underlying curve, and this picks up the variance to the true underlying curve.  
+
 * Interpretation of Figure 4:
     + The squared bias decreases as the flexibility increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systematic difference. As example, in a) when K=61, we will always get a straight line, which differs from the true values.
     + The variance decreases as K increases, since more points are taken account for, and the difference from each training set to the others is less.
@@ -429,22 +429,19 @@ row3 = c("True +", 5, 30,35)
 row4 = c("Total", 29, 36," ")
 kable(rbind(row1, row2, row3,row4), row.names=FALSE)
 ```
-* The table above shows the confusion table for the test data, based on the LDA from the training data.
-
-* The sensitivity is given by 
+* The table above shows the confusion table for the test data, based on the LDA from the training data. The sensitivity is given by 
 $$\frac{\text{True Positive}}{\text{Condition Positive}}=\frac{24}{30}=0.8,$$ 
 while the specificity is given by
 $$\frac{\text{True Negative}}{\text{Condition Negative}}=\frac{30}{35}=0.86.$$
-We want high specificity and sensitivity, and we see that values are fairly close to 1, which means we get many correct predictions. It still seems like we will do mistakes every now and then, as there are a considerable number of mistakes. 
+This result is quite equal to the earlier results from logistic regression and KNN, and they all seem to perform quite well as the numbers are close to 1. 
 
 * In QDA, the covariance matrices for the different classes are allowed to be different. This makes this method more complex, but also more flexible. The decision boundaries will now become quadratic functions of $\boldsymbol{x}$. 
 
 ## d) Compare classifiers
 
-* For logistic regression we got specificity 0.833 and sensitivity 0.857. For KNN with our preferred $K=3$, we got specificity 0.964  and sensitivity 0.919. For LDA we got 0.800 and specificity 0.857. Since we want high specificity and sensitivity, our preferred method when using 0.5 as cut-off is KNN. This method performs considerably better than the other two methods, which are more equal, though logistic regression seems to be slightly better. Our result is still an indication that a strictly linear model might not be optimal for the wine classification problem. 
+* For logistic regression we got specificity 0.833 and sensitivity 0.857. For KNN with our preferred $K=3$, we got specificity 0.833  and sensitivity 0.914. For LDA we got specificity 0.857 and sensitivity 0.800. Since we want high specificity and sensitivity, our preferred method when using 0.5 as cut-off is KNN, since this has a better sensitivity, while the specificity is quite similar for all three methods. This method performs therefore somewhat better than the other two methods, which are more equal, though logistic regression seems to be slightly better. Our result is still an indication that a strictly linear model might not be optimal for the wine classification problem. 
 
-* The following three plots show ROC curves for specificity and sensitivity, and also prints the area under the curves. From the last point we concluded that KNN was the best method for cut-off equal to 0.5. We do however see that the area under the curve is smaller for KNN than for the other methods. We also see on the plot the reason for this, as sensitivity when the cut-off is low or high, and compared to the other methods, in the high or low cut-off areas the specificity/sensitivity is lower. It therefore seems like the other methods would work better for high or low cut-off, compared to KNN. Logistic regression and LDA performs quite similar, which is natural as they make the both linearity-assumption, and the solutions are quite similar. 
- the line in the lower left corner is less vertical, and the line in the upper right corner is less horizontal. This represents the specificity vs 
+* The following plot show ROC curves for specificity and sensitivity, and also prints the area under the curves. From the last point we concluded that KNN was the best method for cut-off equal to 0.5. We do however see that the area under the curve is smaller for KNN than for the other methods. We also see on the plot the reason for this, as the slope in the lower left corner is less vertical, and the slope in the upper right corner is less horizontal. It therefore seems like the other methods would work better for high or low cut-off, compared to KNN. Logistic regression and LDA performs quite similar, which is natural as they make the both linearity-assumption. Lda has the highest area under the curve, and this might therefore be our method of choice for other cut-offs than 0.5.
 
 ```{r,echo=FALSE, eval=TRUE}
 library(pROC)
