@@ -447,15 +447,16 @@ This result is quite equal to the earlier results from logistic regression and K
 library(pROC)
 
 glmroc = roc(response=test$y,predictor=prob)
-plot(glmroc)
 auc(glmroc)
 KNN3roc=roc(response=test$y,predictor=KNN3prob)
-plot(KNN3roc)
-points(spec3, sens3)
 auc(KNN3roc)
 ltrain=lda(y~x1+x2,data=train)
 lpred=predict(object = ltrain, newdata = test)$posterior[,1]
 lroc=roc(response=test$y,lpred)
-plot(lroc)
+plot(glmroc)
+lines(KNN3roc, col='blue')
+lines(lroc, col='red')
+points(spec3, sens3)
 auc(lroc)
 ```
+* In this plot, black line is the ROC for logistic regression, blue line is the KNN (with K=3) and red line is the LDA.
