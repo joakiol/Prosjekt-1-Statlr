@@ -313,7 +313,7 @@ $$
 
 
 ```{r,echo=FALSE, eval=TRUE}
-
+train
 cov0=var(train[train$y==0, 2:3])
 cov1=var(train[train$y==1, 2:3])
 
@@ -374,7 +374,20 @@ $$2.628x_2-0.164x_1=8.368 \implies \\ x_2 = 0.0625x_1 + 3.184$$
 * The following plot shows the training data as circular dots, together with the test data as crosses. The plot also shows the line representing equal probability of being in the two classes, based on the training data using LDA. 
 
 ```{r,echo=FALSE, eval=TRUE}
-
+library(ggplot2)
+library(dplyr)
+inverse=solve(covmatrix)
+sum1=log(pi1/pi0)
+sum2=(1/2)*t(mean1)%*%solve(covmatrix)%*%mean1
+sum3=(1/2)*t(mean0)%*%solve(covmatrix)%*%mean0
+sum4=solve(covmatrix)%*%mean1
+sum5=solve(covmatrix)%*%mean0
+leftside=sum5-sum4
+rightside=sum1+sum3-sum2
+slope1=-leftside[1]/leftside[2]
+intercept1=rightside/leftside[2]
+lda_manual=ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_point(data=test, shape=4)+ geom_abline(slope=slope1, intercept=intercept1)
+lda_manual
 ```
 
 * LDA is also performed using the built in R-function. This is done in the R-code shown below. We see the data corresponds to the estimators we have used earlier, which is natural as the estimators are calculated the same way. 
