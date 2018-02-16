@@ -222,25 +222,23 @@ P(Y=1|x_1 = 17, x_2=3) &= \frac{exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)}{1+exp(
 \end{split}
 $$
   This result can be interpreted as the probability for a observation to be in class $Y=1$ given the variable values $x_1 = 17$ and $x_2=3$.
+
+* The sensitivity is the proportion of correctly classified positive observations, and the specificity is the proportion of correctly classified negative observations. Thus, the values are between 0 and 1, and the goal is to obtain high values. 
+
 ```{r,echo=FALSE, eval=TRUE}
 library(knitr)
-#library(kableExtra)
-row1 = c("", "Predicted -", "Predicted +","Total")
-row2 = c("True -", 24, 6,30)
-row3 = c("True +", 5, 30,35)
-row4 = c("Total", 29, 36," ")
-kable(rbind(row1, row2, row3,row4), row.names=FALSE)
-```
-  Using the table, we get:
-```{r}
 
 prob = predict(fit, newdata=test, type="response")
 pred = ifelse(prob > 0.5, 1, 0)
 t = table (pred, test$y)
-t
+#library(kableExtra)
+row1 = c("", "Predicted -", "Predicted +","Total")
+row2 = c("True -", 25, 5,30)
+row3 = c("True +", 5, 30,35)
+row4 = c("Total", 30, 35," ")
+kable(rbind(row1, row2, row3,row4), row.names=FALSE)
 ```
-
-* The sensitivity is the proportion of correctly classified positive observations, and the specificity is the proportion of correctly classified negative observations. Thus, the values are between 0 and 1, and the goal is to obtain high values. It is important to note that a large value for only one of them is not necessarily any good. For example, a method which just puts every observation in class 1 will have sensitivity 1, but specificity 0. Therefore, we want high values (close to one), but balanced as well. There are cases where it is more important that we get the classification of one class right than the other, for which we can sacrifice the balance to obtain either a high sensitivity or a high specificity (example would be to avoid a Type 1 error, for which we can sacrifice the probability for actually rejecting a false $H_0$). That being said, in this case there is no worse to classify a 1-wine as a 0-wine, than the opposite.
+* The tables above shows the confusion table for the test data, based on the from the training data. It is important to note that a large value for only one of them is not necessarily any good. For example, a method which just puts every observation in class 1 will have sensitivity 1, but specificity 0. Therefore, we want high values (close to one), but balanced as well. There are cases where it is more important that we get the classification of one class right than the other, for which we can sacrifice the balance to obtain either a high sensitivity or a high specificity (example would be to avoid a Type 1 error, for which we can sacrifice the probability for actually rejecting a false $H_0$). That being said, in this case there is no worse to classify a 1-wine as a 0-wine, than the opposite.
 ```{r, echo=FALSE}
 sens=t[2,2]/sum(t[2,])
 spec=t[1,1]/sum(t[1,])
@@ -397,8 +395,7 @@ row3 = c("True +", 5, 30,35)
 row4 = c("Total", 29, 36," ")
 kable(rbind(row1, row2, row3,row4), row.names=FALSE)
 ```
-* The table above shows the confusion table for the test data, based on the lda from the training data.
-The sensitivity is then given by 
+* The sensitivity is given by 
 $$\frac{\text{True Positive}}{\text{Condition Positive}}=\frac{24}{30}=0.8,$$ 
 while the specificity is given by
 $$\frac{\text{True Negative}}{\text{Condition Negative}}=\frac{30}{35}=0.86.$$
