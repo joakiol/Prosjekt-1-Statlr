@@ -35,9 +35,10 @@ On the other hand, the MSE for the test set decreases for the first K's, and the
 
 ## b) Bias-variance trade-off
 
-* You start by fitting a curve to the training data sets by the KNN method. Then you can express the fitted curve as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
+* (You start by fitting a curve to the training data sets by the KNN method. Then you can express the fitted curve as) We have a true underlying curve expressed as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
 $$ E[Y- \hat f (x_0)]^2 .$$ Then we decompose the MSE into three terms:
-$$E[(Y- \hat f (x_0))^2] = Var( \epsilon ) + Var[\hat f  (x_0)] + [Bias(\hat f(x_0))]^2.$$
+$$E[(Y- \hat f (x_0))^2] = Var( \epsilon ) + Var[\hat f  (x_0)] + [Bias(\hat f(x_0))]^2.$$ $Var[\hat f  (x_0)]$ can be found by taking a sample variance over the M repeated training sets. This variance will be based on the sample mean from the data sets, and is therefore unrelated to the true underlying curve. The bias is however calculated as the difference between the sample mean and the true underlying curve, and this picks up the closeness to the true underlying curve.  
+$$
 * Interpretation of Figure 4:
     + The squared bias decreases as the flexibility increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systematic difference. As example, in a) when K=61, we will always get a straight line, which differs from the true values.
     + The variance decreases as K increases, since more points are taken account for, and the difference from each training set to the others is less.
@@ -169,7 +170,7 @@ upper
 
 * Thus, according to our model, the probability is 90 % that this person has a systolic blood pressure between 107.9 and 168.3. The range of this interval is very large, so the prediction interval is not that informative. If we look at the dataset, we can see that a very large amount of the people in the study has a systolic blood pressure in this interval. Therefore, we would have wanted a smaller range of the prediction interval in order to get useful information from it.
 
-# Problem 3 - Classification
+#Problem 3 - Classification
 
 ## a) Logistic regression
 * We want to show that $logit(p_i) = log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i = \frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}$. Thus, we get:
@@ -246,7 +247,7 @@ sens
 spec
 ```
 
-They both obtain relatively large values, and one can therefore argue that the classification works pretty good. Similar values for the sensitivity and the specificity suggest that the classification does not prefer or default to one class, which in this case as discussed above is desirable.
+  They both obtain relatively large values, and one can therefore argue that the classification works pretty good. Similar values for the sensitivity and the specificity suggest that the classification does not prefer or default to one class, which in this case as discussed above is desirable.
 
 
 ## b) K-nearest neighbor classifier
@@ -400,7 +401,7 @@ leftside=sum5-sum4
 rightside=sum1+sum3-sum2
 slope1=-leftside[1]/leftside[2]
 intercept1=rightside/leftside[2]
-lda_manual=ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_point(data=test, shape=4)+ geom_abline(slope=slope1, intercept=intercept1) + ggtitle("Train and test and logistic boundary")
+lda_manual=ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_point(data=test, shape=4)+ geom_abline(slope=slope1, intercept=intercept1)
 lda_manual
 ```
 
@@ -442,22 +443,22 @@ We want high specificity and sensitivity, and we see that values are fairly clos
 
 * For logistic regression we got specificity 0.833 and sensitivity 0.857. For KNN with our preferred $K=3$, we got specificity 0.964  and sensitivity 0.919. For LDA we got 0.800 and specificity 0.857. Since we want high specificity and sensitivity, our preferred method when using 0.5 as cut-off is KNN. This method performs considerably better than the other two methods, which are more equal, though logistic regression seems to be slightly better. Our result is still an indication that a strictly linear model might not be optimal for the wine classification problem. 
 
-* The following three plots show ROC curves for specificity and sensitivity, and also prints the area under the curves. From the last point we concluded that KNN was the best method for cut-off equal to 0.5. We do however see that the area under the curve is smaller for KNN than for the other methods. We also see on the plot the reason for this, as sensitivity when the cut-off is low or high, and compared to the other methods, in the high or low cut-off areas the specificity/sensitivity is lower. It therefore seems like the other methods would work better for high or low cut-off, compared to KNN. Logistic regression and LDA performs quite similar, which is natural as they make the both linearity-assumption, and the solutions are quite similar. This represents the specificity vs the line in the lower left corner is less vertical, and the line in the upper right corner is less horizontal. 
+* The following three plots show ROC curves for specificity and sensitivity, and also prints the area under the curves. From the last point we concluded that KNN was the best method for cut-off equal to 0.5. We do however see that the area under the curve is smaller for KNN than for the other methods. We also see on the plot the reason for this, as sensitivity when the cut-off is low or high, and compared to the other methods, in the high or low cut-off areas the specificity/sensitivity is lower. It therefore seems like the other methods would work better for high or low cut-off, compared to KNN. Logistic regression and LDA performs quite similar, which is natural as they make the both linearity-assumption, and the solutions are quite similar. 
+ the line in the lower left corner is less vertical, and the line in the upper right corner is less horizontal. This represents the specificity vs 
 
 ```{r,echo=FALSE, eval=TRUE}
 library(pROC)
 
 glmroc = roc(response=test$y,predictor=prob)
+plot(glmroc)
 auc(glmroc)
 KNN3roc=roc(response=test$y,predictor=KNN3prob)
-
+plot(KNN3roc)
+points(spec3, sens3)
 auc(KNN3roc)
 ltrain=lda(y~x1+x2,data=train)
 lpred=predict(object = ltrain, newdata = test)$posterior[,1]
 lroc=roc(response=test$y,lpred)
-plot(glmroc, col='red')
-lines(KNN3roc, col = 'blue')
-lines(lroc)
-points(spec3, sens3)
+plot(lroc)
 auc(lroc)
 ```
