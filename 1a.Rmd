@@ -18,4 +18,4 @@ knitr::opts_chunk$set(echo = TRUE)
 * The MSE fot the training sets shows how close the predicted curve is to the points it is based on. As we can see, at K=1 the MSE is zero, which is a clear sign of overfitting. The MSE just increase as K increases, which indicates low flexibility. There is by this plot hard to say where the overfitting stops and the low flexibility starts, and thus hard to conclude what's the best value for K. 
 One the other hand, the MSE for the test sets does decrease for the first K's, and then increases. The test set isn't affected by overfitting the same way, and will therefor show the best value for K much clearer. 
 
-* The lowest point, being around K=5 here, is where the error is lowest and would be our choice for K.
+* The lowest point, being around K=5 here, is where the error is lowest and would be our choice for K. $\epsilon$

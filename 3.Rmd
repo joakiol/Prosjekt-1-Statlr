@@ -40,9 +40,14 @@ One the other hand, the MSE for the test sets does decrease for the first K's, a
 ## b) Bias-variance trade-off
 
 * Explain how that is done. Hint: this is what the $M$ repeated training data sets are used for. 
-    + The squared bias decreases as the flexible increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systmatic difference. As example, in a) when K=61, we will always get a straight line, and differs from the true underlying values.
+You start by fitting a curve to the training data sets by the KNN method. Then you can express the fittet curve as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
+$$ E[Y- \hat f (x_0)]^2 .$$ Then we decompose the MSE into three terms:
+$$E[(Y- \hat f (x_0))^2] = Var( \epsilon ) + Var[\hat f  (x_0)] + [Bias(\hat f(x_0))]^2 ,$$ and
+* Interpretation of Figure 4:
+    + The squared bias decreases as the flexible increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systmatic difference. As example, in a) when K=61, we will always get a straight line, and differs from the true values.
     + The variance decreases as K increases, which is due to more points taken account for, and less difference from each training set to the others.
     + The irreducible error isn't dependent on the values of K, and is therefore constant.
+    
 * Based on the sum of the errors, the lowest error is K=3 (but nearly the same as K=5). Thus this will be our choice for K as this will give the most accurate model. This agrees fairly well with what we found in a), and our conclusion would be that a K between 3 and 5 would give the best results.
 
 # Problem 2 - Linear regression [4 points]
@@ -67,9 +72,9 @@ summary(modelA)
 
 ## a) Logistic regression
 * We want to show that $logit(p_i) = log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i = \frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}$. Thus, we get:
-\begin{equation}
+$$
 log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{1-\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg)= log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{\frac{1}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg) = log \Bigg(exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \Bigg) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}.
-\end{equation}
+$$
 And we get $log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, which is a linear function.
 ```{r, echo=FALSE}
 library(ggplot2)
@@ -135,7 +140,6 @@ library(dplyr)
 KNN3 = knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = F)
 KNN3probwinning = attributes(knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = TRUE))$prob
 KNN3prob <- ifelse(KNN3 == "0", 1-KNN3probwinning, KNN3probwinning)
-#cbind(KNN3probwinning,KNN3prob)
 testclass3=ifelse(KNN3prob>0.5,1,0)
 t3 = table(test$y,testclass3)
 t3
@@ -143,10 +147,12 @@ sens3=t3[2,2]/sum(t3[2,])
 spec3=t3[1,1]/sum(t3[1,])
 sens3
 spec3
+```
+* Here, the sensitivity is a little higher than the logistic regression, and the specificity stays the same. Thus, this method (with K=3) gets a total higher number of wines classified from the right cultivar. This is a good indicator that KNN with K=3 performs better in this example than the logistic regression.
+```{r, echo = FALSE, warning = FALSE}
 KNN9 = knn(train = train[,-1], test = test[,-1], cl = train$y, k=9, prob=F)
 KNN9probwinning = attributes(knn(train = train[,-1], test = test[,-1], k = 9, cl = train$y, prob = TRUE))$prob
 KNN9prob <- ifelse(KNN9 == "0", 1-KNN9probwinning, KNN9probwinning)
-#cbind(KNN9probwinning,KNN9prob)
 testclass9=ifelse(KNN9prob>0.5,1,0)
 t9 = table(test$y, testclass9)
 t9
@@ -156,7 +162,7 @@ sens9
 spec9
 
 ```
-As we can see from the data, the sencitivity and specificity for k=3 is higher than for k=9. That happens because the neighbours in k=9 becomes further away, and the method doesn't become local anymore.
+* As we can see from the data, the sensitivity for K=3 is higher than for K=9, and the specificity is equal. That happens because the neighbours in k=9 becomes further away, and even though the formula take in account for more points, the points isn't as local anymore. Thus the bias increases, and the misclassification increases as well. The best value for K really depends on the number of points and how they are distributed, but as shown in 3d), one can calculate the ROC curve, and find the optimal K. Since there is a bias-variance trade-off, where low values for K will give high variance and high values for K will give a high bias, the optimal point will be where they togheter give the lowest mean squared error (MSE). 
 
 ## c) LDA (& QDA)
  The expression from the task is found by assuming the classes are normal distributed according to the function  
