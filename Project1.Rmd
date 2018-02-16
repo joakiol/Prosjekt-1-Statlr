@@ -312,7 +312,6 @@ $$
 
 
 ```{r,echo=FALSE, eval=TRUE}
-
 library(ggplot2)
 library(GGally)
 library(class)
@@ -328,6 +327,7 @@ set.seed(4268) #to get the same order if you rerun - but you change this to your
 ord = sample(1:n) #shuffle
 test = wine[ord[1:(n/2)],] 
 train = wine[ord[((n/2)+1):n],]
+
 cov0=var(train[train$y==0, 2:3])
 cov1=var(train[train$y==1, 2:3])
 
@@ -402,7 +402,6 @@ slope1=-leftside[1]/leftside[2]
 intercept1=rightside/leftside[2]
 lda_manual=ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_point(data=test, shape=4)+ geom_abline(slope=slope1, intercept=intercept1) + ggtitle("Train and test and logistic boundary")
 lda_manual
-
 ```
 
 * LDA is also performed using the built in R-function. This is done in the R-code shown below. We see the data corresponds to the estimators we have used earlier, which is natural as the estimators are calculated the same way. 
