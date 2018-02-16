@@ -1,0 +1,340 @@
+---
+title: 'Compulsory exercise 1: Group X'
+author: "NN1, NN and NN3"
+date: "Date when you hand in"
+output:
+  pdf_document: null
+  html_document:
+    df_print: paged
+subtitle: TMA4268 Statistical Learning V2018
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warnings=FALSE)
+knitr::opts_chunk$set(message =FALSE)
+```
+
+Take a look at the cheat sheets for R Markdown here: File > Help > Cheatsheets > R Markdown Cheat Sheet in RStudio, or here
+<http://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf>
+
+or the lessons: <http://rmarkdown.rstudio.com/lesson-1.html>
+
+# Problem 1 - Core concepts in statistical learning [2 points]
+
+## a) Training and test MSE
+
+* We see that for K=1, the variance is pretty high, which is expected as the curves only will go from point to point. At K=2 we see that the variance lowers some as we now take in to account the two nearest points, and the peaks will not be that far away from the true line. When K increases, we take account for neigbhours which is not necessary very local anymore. Which K to choose to keep the neighbourhood local depends on the number of observations in the trainingset, and here n=61, and already when K=10, we get somewhat of a problem in the end points. Although a very good fit along most of the line, at the end, it will take the same points in account, and one will get a straight line. At K=61, one will get a straight line, which is the mean.
+
+* A small value of K will give a more flexible fit, which has low bias but high variance. As mentioned above, K=1 will give point-to-point plots, which is an overfit. At K=2 we get a lower variance, and there is no sign of underfitting the curve. At K=10 the variance is notably lower, but the plot shows signs of underfitting and a low flexibility. Continuing the trend, at K=25 we get clearly a underfitted and inflexible result.
+
+* The MSE fot the training sets shows how close the predicted curve is to the points it is based on. As we can see, at K=1 the MSE is zero, which is a clear sign of overfitting. The MSE just increase as K increases, which indicates low flexibility. There is by this plot hard to say where the overfitting stops and the low flexibility starts, and thus hard to conclude what's the best value for K. 
+One the other hand, the MSE for the test sets does decrease for the first K's, and then increases. The test set isn't affected by overfitting the same way, and will therefor show the best value for K much clearer. 
+
+* The lowest point, being around K=5 here, is where the error is lowest and would be our choice for K.
+
+
+
+## b) Bias-variance trade-off
+
+* Explain how that is done. Hint: this is what the $M$ repeated training data sets are used for. 
+You start by fitting a curve to the training data sets by the KNN method. Then you can express the fittet curve as $Y = f(x) + \epsilon$. Here $\epsilon$ is the random or irreducible error, and we assume it has mean zero and constant variance equal to $\sigma^2$. The expected test mean squared error (MSE) for $x_0$ is defined as:
+$$ E[Y- \hat f (x_0)]^2 .$$ Then we decompose the MSE into three terms:
+$$E[(Y- \hat f (x_0))^2] = Var( \epsilon ) + Var[\hat f  (x_0)] + [Bias(\hat f(x_0))]^2 ,$$ and
+* Interpretation of Figure 4:
+    + The squared bias decreases as the flexible increases. That means that for high flexibility there is no systematic difference from the predicted model and the values being estimated. At higher values for K there will be a systmatic difference. As example, in a) when K=61, we will always get a straight line, and differs from the true values.
+    + The variance decreases as K increases, which is due to more points taken account for, and less difference from each training set to the others.
+    + The irreducible error isn't dependent on the values of K, and is therefore constant.
+    
+* Based on the sum of the errors, the lowest error is K=3 (but nearly the same as K=5). Thus this will be our choice for K as this will give the most accurate model. This agrees fairly well with what we found in a), and our conclusion would be that a K between 3 and 5 would give the best results.
+
+# Problem 2 - Linear regression [4 points]
+
+Here you see an R chunk that is evaluated (when knitting) and code is displayed.
+
+```{r,echo=TRUE,eval=FALSE}
+library(ggplot2)
+data = read.table("https://www.math.ntnu.no/emner/TMA4268/2018v/data/SYSBPreg3uid.txt")
+dim(data)
+colnames(data)
+modelA=lm(-1/sqrt(SYSBP) ~ .,data = data)
+summary(modelA)
+```
+
+## a) Understanding model output [1 point]
+## b) Model fit [1 point]
+## c) Confidence interval and hypothesis test [1 points]
+## d) Prediction [1 point]
+
+#Problem 3 - Classification
+
+## a) Logistic regression
+* We want to show that $logit(p_i) = log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i = \frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}$. Thus, we get:
+$$
+log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{1-\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg)= log \Bigg(\frac{\frac{exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}}{\frac{1}{1+exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})}} \Bigg) = log \Bigg(exp(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \Bigg) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}.
+$$
+And we get $log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, which is a linear function.
+```{r, echo=FALSE}
+library(ggplot2)
+library(GGally)
+library(class)
+library(MASS)
+library(pROC)
+wine=read.csv("https://www.math.ntnu.no/emner/TMA4268/2018v/data/Comp1Wine.csv",sep=" ")
+wine$class=as.factor(wine$class-1)
+colnames(wine)=c("y","x1","x2")
+#ggpairs(wine, ggplot2::aes(color=y))
+n=dim(wine)[1]
+set.seed(4268) #to get the same order if you rerun - but you change this to your favorite number
+ord = sample(1:n) #shuffle 
+test = wine[ord[1:(n/2)],]
+train = wine[ord[((n/2)+1):n],]
+
+fit = glm(y ~ ., data = train, family = "binomial")
+coef(fit)
+```
+* There is no obivous interpretation of the $\hat{\beta_1}$ and $\hat{\beta_2}$ since a increase of one unit in $\hat{\beta}$ does not give a consistent increase or decrease for all values of $x_1$. It is however easier to look at the odds $\frac{p_i}{1-p_i}$, which is bounded from below, but not above. The interpretation of the odds in this example is the conditional probability that a wine is in class 1, divided by the probability that the wine is in class 0 for the covariates $x_1$ and $x_2$. Moreocer a increase from $x_{1i}$ to $x_{1i} + 1$, the odds are multiplied by $e^{\beta_1}$, which gives us a more intuitive interpretation of $\hat{\beta_1}$. The case is similar for $\hat{\beta_2}$ for a increase in $x_{2i}$, and we can see that $\beta < 0$ the odds will decrease, for $\beta_1 = 0$ the odds will stay the same, and for $\beta_1 >0$, the odds will increase.
+
+* Since the odds is linear (as shown before), we have a linear class boundary. From earlier, we have: $log \bigg(\frac{Pr(Y_i=1|X=x_i)}{Pr(Y_i=0|X=x_i)} \bigg) = log \Big(\frac{p_i}{1-p_i}\Big) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}$, where we want to fit the coefficients by maximaizing the likelihood. Then, where $\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} = 0$, we have the class boundary.
+```{r,echo=FALSE}
+a = coef(fit)[1]
+b = coef(fit)[2]
+c = coef(fit)[3]
+g1 = ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=3)+geom_abline(slope=b/(-c),intercept=a/(-c))
+g1 = g1 + ggtitle("train and test and logistic boundary")
+g1
+summary(fit)
+```
+* Using the summary output, we can get the coefficients $\beta_0$, $\beta_1$ and $\beta_2$. Thus by using the formula:
+\begin{equation}
+P(Y=1|x_1 = 17, x_2=3) = \frac{exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)}{1+exp(\beta_0 + \beta_1 x_1 + \beta_2 x_2)} = \frac{exp( 7.3143 + 0.1332*17 - 2.3361*3)}{1+exp( 7.3143 + 0.1332*17 - 2.3361*3)} = \frac{exp(2.5704)}{1+exp(2.5704)}=0.9289.
+\end{equation}
+This result can be interpreted as the probability for a observation to be in class $Y=1$ given the variable values $x_1 = 17$ and $x_2=3$.
+
+```{r}
+
+prob = predict(fit, newdata=test, type="response")
+pred = ifelse(prob > 0.5, 1, 0)
+t = table (pred, test$y)
+t
+```
+* The sensitivity is the propotion of correctly classified positive observations, and the specificity is the propotion of correctly classed positive observations. Thus, the values lies between 0 and 1, and the goal is to obtain high values. It's important to note that large value for only one of them is not necessarily any good. For example, a method which just puts every observation in class 1 will have sensitivity 1, but specificity 0. Therefore, we want high values (close to one), but balanced as well. There are cases where there is more important that we get the classification of one class right, than the other, for which we can sacrifice the balance to obtain either a high sensitivity or a high spesificity (example would be to avoid a Type 1 error, for which we can sacrifice the probabolity for actually rejecting a fals $H_0$). That being said, in this case there is no worse to classify a 1-wine as a 0-wine, than the opposite.
+```{r, echo=FALSE}
+sens=t[2,2]/sum(t[2,])
+spec=t[1,1]/sum(t[1,])
+sens
+spec
+```
+  They both obtain relativly large values, and one can therefor argue that the classification works pretty good. Similar values for the sensitivity and the spesificity suggests that the classification does not prefer or default to one class, which in this case as discussed above is 
+
+## b) K-nearest neighbor classifier
+\begin{equation}
+Pr(Y=||X=x_0)=\frac{1}{K} \sum_{i \in N_o} I(y_i=j)
+\end{equation}
+* Given the point $x_0$, the equation finds the K nearest points in the dataset, and count the most frequent class among the neigbhours. The right side of the equation finds the precentage of the neighbours which belong to class j, and based on that, we take a decision whether $x_=$ should be in class j or not. 
+```{r, echo=FALSE, warning=FALSE}
+library(class)
+library(dplyr)
+KNN3 = knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = F)
+KNN3probwinning = attributes(knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = TRUE))$prob
+KNN3prob <- ifelse(KNN3 == "0", 1-KNN3probwinning, KNN3probwinning)
+testclass3=ifelse(KNN3prob>0.5,1,0)
+t3 = table(test$y,testclass3)
+t3
+sens3=t3[2,2]/sum(t3[2,])
+spec3=t3[1,1]/sum(t3[1,])
+sens3
+spec3
+```
+* Here, the sensitivity is a little higher than the logistic regression, and the specificity stays the same. Thus, this method (with K=3) gets a total higher number of wines classified from the right cultivar. This is a good indicator that KNN with K=3 performs better in this example than the logistic regression.
+```{r, echo = FALSE, warning = FALSE}
+KNN9 = knn(train = train[,-1], test = test[,-1], cl = train$y, k=9, prob=F)
+KNN9probwinning = attributes(knn(train = train[,-1], test = test[,-1], k = 9, cl = train$y, prob = TRUE))$prob
+KNN9prob <- ifelse(KNN9 == "0", 1-KNN9probwinning, KNN9probwinning)
+testclass9=ifelse(KNN9prob>0.5,1,0)
+t9 = table(test$y, testclass9)
+t9
+sens9=t9[2,2]/sum(t9[2,])
+spec9=t9[1,1]/sum(t9[1,])
+sens9
+spec9
+
+```
+* As we can see from the data, the sensitivity for K=3 is higher than for K=9, and the specificity is equal. That happens because the neighbours in k=9 becomes further away, and even though the formula take in account for more points, the points isn't as local anymore. Thus the bias increases, and the misclassification increases as well. The best value for K really depends on the number of points and how they are distributed, but as shown in 3d), one can calculate the ROC curve, and find the optimal K. Since there is a bias-variance trade-off, where low values for K will give high variance and high values for K will give a high bias, the optimal point will be where they togheter give the lowest mean squared error (MSE). 
+
+## c) LDA (& QDA)
+ The expression from the task is found by assuming the classes are normal distributed according to the function  
+
+
+$$f_k(x)=\frac{1}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2}}e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_k})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_k})}.$$ 
+The posterior probability is the calculated as 
+$$p_k(x)=Pr(Y=k|\boldsymbol{X}=\boldsymbol{x})=\frac{Pr(\boldsymbol{X}=\boldsymbol{x}|Y=k)Pr(Y=k)}{Pr(\boldsymbol{X}=\boldsymbol{x})}=\frac{\pi_kf_k(\boldsymbol{x})}{\sum_{l=1}^K\pi_lf_l(\boldsymbol{x})}$$
+
+* Here, $\pi_k=Pr(Y=k)$, which is the probability that a given wine sample $Y$ belongs to class $k$. $\boldsymbol{\mu_k}$ is the vector containing the expected values of the parametres, which is color intensity and alcalinity of ash in this task. $\boldsymbol{\Sigma}$ is the covariance matrix for the parametres, which contains the variance of the parametres and the covariance between them. $f_k(x)$ is as mentioned the probability density function for a given class, which again is the conditional probability of $x$ with a given class, $f_k(x)=Pr(\boldsymbol{X}=\boldsymbol{x}|Y=k)$. 
+
+* To estimate $\pi_k$ we can use the the total number of samples in the training set $n$, and the number of samples belonging to the requested class, $n_k$. We can then use te estimator $\hat{\pi}_k=\frac{n_k}{n}$. $\mu_k$ can be estimated simply using a sample mean from all the samples belonging to the requested class. The estimator is then calculated as $\hat{\mu}_k=\frac{1}{n_k}\sum_{i:y_i=k}x_i$. To estimate the covariance matrix, the class-specific covariance matrices can be calculated as
+$$\hat{\boldsymbol{\Sigma}}_k=\frac{1}{n_k-1}\sum_{i:y_i=k}(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)(\boldsymbol{x}_i-\bar{\boldsymbol{x}}_i)^T$$
+The true covariance matrix is the found by summing over the difference classes using wheighs according to the fraction of samples in the belonging class. We then get 
+$$\hat{\boldsymbol{\Sigma}}=\sum_{k=1}^K \frac{n_k-1}{n-K}\cdot \hat{\boldsymbol{\Sigma}}_k.$$ 
+Calculations for the training data is done in R, resulting in values $\pi_0=0.45$, $\pi_1=0.55$, $\boldsymbol{\mu_0}=(17.26 , 5.58)^T$, $\boldsymbol{\mu_1}=(20.18, 2.97)^T$ and 
+$$
+\hat{\boldsymbol{\Sigma}}=
+\left(\begin{array}{cc}
+7.23 & -0.66\\
+-0.66 & 0.95
+\end{array}\right)
+$$
+
+
+```{r,echo=FALSE, eval=TRUE}
+library(ggplot2)
+library(GGally)
+library(class)
+library(MASS)
+library(pROC)
+library(plyr)
+wine=read.csv("https://www.math.ntnu.no/emner/TMA4268/2018v/data/Comp1Wine.csv",sep=" ")
+wine$class=as.factor(wine$class-1)
+colnames(wine)=c("y","x1","x2")
+#ggpairs(wine, ggplot2::aes(color=y))
+n=dim(wine)[1]
+set.seed(4268) #to get the same order if you rerun - but you change this to your favorite number
+ord = sample(1:n) #shuffle
+test = wine[ord[1:(n/2)],] 
+train = wine[ord[((n/2)+1):n],]
+cov0=var(train[train$y==0, 2:3])
+cov1=var(train[train$y==1, 2:3])
+
+frequency=count(train, "y")
+pi0=(frequency[1, 2]/(frequency[1,2]+frequency[2,2]))
+pi1=(frequency[2, 2]/(frequency[1,2]+frequency[2,2]))
+mean0=c(mean(train[train$y==0, "x1"]), mean(train[train$y==0, "x2"]))
+mean1=c(mean(train[train$y==1, "x1"]), mean(train[train$y==1, "x2"]))
+covmatrix=(1/(frequency[1,2]+frequency[2,2]-2))*(cov0*(frequency[1,2]-1)+cov1*(frequency[2,2]-1))
+
+```
+
+* We want to find when 
+$$Pr(Y=0|\boldsymbol{X}=\boldsymbol{x})=Pr(Y=1|\boldsymbol{X}=\boldsymbol{x})$$
+We rewrite this as 
+$$\frac{\pi_0 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}=\frac{\pi_1 e^{-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1})}}{(2\pi)^{p/2}|\boldsymbol{\Sigma}|^{1/2} \sum_{l=1}^K \pi_l f_l(\boldsymbol{x})}$$
+Since the denominators are equal on both sides, we can disregard them. By taking logarithms on both sides we achieve
+$$-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_0})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_0}) + \log{\pi_0}=-\frac{1}{2} (\boldsymbol{x}-\boldsymbol{\mu_1})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu_1}) + \log{\pi_1}$$
+We now complete the miltiplications, and remove the equal parts on each side to get:
+$$\frac{1}{2}(\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} +\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x} - \boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}) + \log{\pi_0}=\frac{1}{2}(\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} +\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x} - \boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}) + \log{\pi_1}$$
+Now we know the covariance matrix is symmetric positive definite. We therefore know $\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k} =\boldsymbol{\mu_k}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{x}$. We therefore finally get 
+$$\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x}),$$
+where 
+$$\delta_k(\boldsymbol{x})=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k}- \frac{1}{2}\boldsymbol{\mu_k}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_k} + \log{\pi_k}; \quad k\in \{0, 1\}$$. 
+
+<!-- * In the following figure, the LDA has been done using the lda-function in R. The plots include the training data together with the classification areas.  -->
+
+<!-- ```{r,echo=FALSE, eval=TRUE} -->
+<!-- library(class) -->
+<!-- library(MASS) -->
+<!-- library(ggplot2) -->
+<!-- library(dplyr) -->
+<!-- wine0_plot = ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) -->
+<!-- #testgrid = expand.grid(x1 = seq(min(train[,2]-0.2), max(train[,2]+0.2),  -->
+<!-- #              by=0.2), x2 = seq(min(train[,3]-0.2), max(train[,3]+0.2),  -->
+<!-- #              by=0.1)) -->
+<!-- #wine_lda = lda(y~x1+x2, data=train, prior=c(pi0,pi1)) -->
+<!-- wine_lda = lda(y~x1+x2, data=train) -->
+<!-- wine_lda -->
+<!-- #res = predict(object = wine_lda, newdata = testgrid) -->
+<!-- #type_lda = res$class -->
+<!-- #postprobs=res$posterior -->
+<!-- #wine_lda_df = bind_rows(mutate(testgrid, type_lda)) -->
+<!-- #wine_lda_df$type_lda = as.factor(wine_lda_df$type_lda) -->
+
+<!-- #winelda_plot = wine0_plot + geom_point(aes(x = x1, y=x2, colour=type_lda), data=wine_lda_df, size=0.8) -->
+<!-- winelda_plot = wine0_plot + wine_lda -->
+<!-- #winelda_plot -->
+<!-- ``` -->
+
+* To find the class boundary formula, we need to solve the equation $\delta_0(\boldsymbol{x})=\delta_1(\boldsymbol{x})$. We get 
+$$\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}- \frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} + \log{\pi_0}=\boldsymbol{x}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}- \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\pi_1}$$
+$$\boldsymbol{x}^T(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0} - \frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1} + \log{\frac{\pi_1}{\pi_0}}$$
+We use estimators for the parametres as discussed earlier in this task. The necessary values are calculated in R, and we get $\log{\frac{\pi_1}{\pi_0}}=0.216$, $\frac{1}{2}\boldsymbol{\mu_1}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1}=-41.1$, $\frac{1}{2}\boldsymbol{\mu_0}^T\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}=-49.2$ and $(\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_0}-\boldsymbol{\Sigma}^{-1}\boldsymbol{\mu_1})=(-0.17, 2.63)^T$.
+We then get the equation 
+$$2.628x_2-0.164x_1=8.368 \implies \\ x_2 = 0.0625x_1 + 3.184$$
+
+* The following plot shows the training data as circular dots, together with the test data as crosses. The plot also shows the line representing equal probability of being in the two classes, based on the training data using LDA. 
+
+```{r,echo=FALSE, eval=TRUE}
+library(ggplot2)
+library(dplyr)
+inverse=solve(covmatrix)
+sum1=log(pi1/pi0)
+sum2=(1/2)*t(mean1)%*%solve(covmatrix)%*%mean1
+sum3=(1/2)*t(mean0)%*%solve(covmatrix)%*%mean0
+sum4=solve(covmatrix)%*%mean1
+sum5=solve(covmatrix)%*%mean0
+leftside=sum5-sum4
+rightside=sum1+sum3-sum2
+slope1=-leftside[1]/leftside[2]
+intercept1=rightside/leftside[2]
+lda_manual=ggplot(train, aes(x=x1, y=x2, color=y))+geom_point(size=2.5) + geom_point(data=test, shape=4)+ geom_abline(slope=slope1, intercept=intercept1)
+lda_manual
+
+```
+
+* LDA is also performed using the built in R-function. This is done in the R-code shown below. We see the data corresponds to the estimators we have used earlier, which is natural as the estimators are calculated the same way. 
+
+```{r,echo=TRUE, eval=TRUE}
+lda_train=lda(y~x1+x2, data=train)
+lda_train
+
+```
+
+
+
+\newpage
+
+
+
+```{r,echo=FALSE, eval=TRUE}
+library(knitr)
+#library(kableExtra)
+lpred=predict(lda_train, newdata=test)
+confusiontable=table(test$y, lpred$class)
+row1 = c("", "Predicted -", "Predicted +","Total")
+row2 = c("True -", 24, 6,30)
+row3 = c("True +", 5, 30,35)
+row4 = c("Total", 29, 36," ")
+kable(rbind(row1, row2, row3,row4), row.names=FALSE)
+```
+* The table above shows the confusion table for the test data, based on the lda from the training data.
+The sensitivity is then given by 
+$$\frac{\text{True Positive}}{\text{Condition Positive}}=\frac{24}{30}=0.8,$$ 
+while the specificity is given by
+$$\frac{\text{True Negative}}{\text{Condition Negative}}=\frac{30}{35}=0.86.$$
+We want high specifity and seinsitivity, and we see values are fairly close to 1, which mean we get many correct predictions. It still seems like we will do mistakes every now and then, as there are a considerable number of mistakes. 
+
+* In QDA, the covariance matrices for the different classes are allowed to be different. This makes this method more complex, but also more flexible. The decision boundaries will now become quadratic functions of $\boldsymbol{x}$. 
+
+## d) Compare classifiers
+
+* For logistic regression we got specificity 0.833 and sensitivity 0.857. For KNN with our preferred $K=3$, we got specificity 0.964  and sensitivity 0.919. For lda we got 0.800 and specificity 0.857. Since we want high specificity and sensitivity, our preferred method when using 0.5 as cut-off is KNN. This method performs considerably better than the other two methods, which are more equal, though logistic regression seems to be slightly better. ha med dette?:Note however that the training and test sets are not that big, and that might influence which method performs better. Our result is still an indication that a strictly linear model might not be optimal for the wine classification problem. 
+
+* The following three plots show ROC curves for specificity and sensitivity, and also prints the area under the curves. From the last point we concluded that KNN was the best method for cut-off equal to 0.5. We do however see that the area under the curve is smaller for KNN than for the other methods. We also see on the plot the reason for this, assensitivity when the cut-off is low or high, and compared to the other methods, in the high or low cut-off areas the specificity/sensitivity is lower. It therefore seems like the other methods would work better for high or low cut-off, compared to KNN. Logistic regression and lda performs quite similar, which is natural as they make the both linearity-assumption, and the solutions are quite similar. 
+ the line in the lower left corner is less vertical, and the line in the upper right corner is less horizontal. This represents the specificity vs 
+
+```{r,echo=FALSE, eval=TRUE}
+library(pROC)
+
+glmroc = roc(response=test$y,predictor=prob)
+plot(glmroc)
+auc(glmroc)
+KNN3roc=roc(response=test$y,predictor=KNN3prob)
+plot(KNN3roc)
+points(spec3, sens3)
+auc(KNN3roc)
+#ltrain=lda(y~x1+x2,data=train)
+#lpred=predict(object = ltrain, newdata = test)$posterior[,1]
+#lroc=roc(response=test$y,lpred)
+#plot(lroc)(lroc)
+#auc
+```
