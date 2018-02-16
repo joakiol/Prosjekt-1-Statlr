@@ -20,7 +20,7 @@ colnames(data)
 
 
 #a)
-In this problem, we are going to model $-\frac{1}{\sqrt{SYSBP}}$ as a function of the covariates SEX, AGE, CURSMOKE, BMI, TOTCHOL and BPMEDS.
+In this problem, we are going to model $-\frac{1}{\sqrt{SYSBP}}$ as a function of the covariates SEX, AGE, CURSMOKE, BMI, TOTCHOL and BPMEDS, using the data from n = 2600 persons.
 The equation for the fitted `modelA`, where $-\frac{1}{\sqrt{SYSBP}}$ is the response, is 
 $$\boldsymbol{Y}=\boldsymbol{\beta}\boldsymbol{X}+\boldsymbol{\epsilon},$$
 
@@ -62,7 +62,7 @@ ggplot(modelA, aes(sample = .stdresid)) +
 
 Diagnostic plots of fitted values against standardized residuals and QQ-plot of standardized residuals for modelA are shown above. From these plots, we can see that the model seems to fit well. The plot of the residuals vs fitted values shows that the residuals, except for the largest fitted values, are equally spread around a horizontal line. This is a good indication of a linear relationship between the response and the covariates. In addition, the residuals in the qq-plot follow almost a straight line all the way. Thus, the residuals seem to be Gaussian distributed.
 
-We then make a new model, modelB, where $SYSBP$ is the response:
+We then make a new model, modelB, where SYSBP is the response:
 
 ```{r}
 modelB=lm(SYSBP ~ .,data = data)
@@ -84,7 +84,7 @@ ggplot(modelB, aes(sample = .stdresid)) +
   labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
 ```
 
-The plot of fitted values vs residuals for modelB seems quite similar to the one for modelA. However, although the residuals mostly are spread around a horizontal line, it is seemingly not the case for all the largest and smalles fitted values. It is however difficult to state whether this indicates that the assumption of linear relationship between the response and the covariates does not quite hold. Also, the residuals in the qq-plot do not quite follow a straight line, so the residuals are probably not Gaussian distributed. 
+The plot of fitted values vs residuals for modelB seems quite similar to the one for modelA. However, although the residuals mostly are spread around a horizontal line, it is seemingly not the case for all the largest and smalles fitted values. It is however difficult to state whether this indicates that the assumption of linear relationship between the response and the covariates does not hold. Also, the residuals in the qq-plot do not quite follow a straight line, so the residuals are probably not Gaussian distributed. 
 
 In addition, we can do the Anderson-Darling normality test for the two models:
 
@@ -106,7 +106,7 @@ Therefore, according to the model, if the BMI is increased by 1 while the other 
 
 We have that for each $\beta_j$, $\hat{\beta}_j \sim N(\beta_j,\text{Var}(\hat{\beta}_j))$ and 
 $$T_j =\frac{\hat{\beta}_j-\beta_j}{\sqrt{\widehat{\text{Var}}(\hat{\beta}_j)}} \sim t_{n-2}.$$
-Using this, we can construct a confidence interval for $\hat{\beta}_{BMI}$. This interval will then be on the form $\hat{\beta}_{BMI} \pm t_{\alpha/2,n-2}SE(\hat{\beta}_{BMI})$. In order to make a 99 % confidence interval, we have $\alpha=0.01$. Thus, we can look up in a table to find the value $t_{0,005,n-2} \approx z_{0,005} = 2.58$. Since $n=2600 > 30$, we can use this approximation by the Central Limit Theorem. Now, by using the values of $\hat{\beta}_{BMI}$ and $SE(\hat{\beta}_{BMI})$ from the summary-output, we obtain the 99 % confidence interval $(3.087 \cdot 10^{-4} \pm 2.58 * 2.955 \cdot 10^{-5}),$ $$(2.325 \cdot 10^{-4}, 3.849 \cdot 10^{-4}).$$ 
+Using this, we can construct a confidence interval for $\hat{\beta}_{BMI}$. We have that $$P(-t_{\alpha/2,n-2} < \frac{\hat{\beta}_j-\beta_j}{\sqrt{\widehat{\text{Var}}(\hat{\beta}_j)}} < t_{\alpha/2,n-2}) = 1 - \alpha).$$ From this, we will get an interval on the form $\hat{\beta}_{BMI} \pm t_{\alpha/2,n-2}SE(\hat{\beta}_{BMI})$. In order to make a 99 % confidence interval, we have $\alpha=0.01$. Thus, we can look up in a table to find the value $t_{0,005,n-2} \approx z_{0,005} = 2.58$. Since $n=2600 > 30$, we can use this approximation by the Central Limit Theorem. Now, by using the values of $\hat{\beta}_{BMI}$ and $SE(\hat{\beta}_{BMI})$ from the summary-output, we obtain the 99 % confidence interval $(3.087 \cdot 10^{-4} \pm 2.58 * 2.955 \cdot 10^{-5}),$ $$(2.325 \cdot 10^{-4}, 3.849 \cdot 10^{-4}).$$ 
 
 The interpretation of this interval is that we can have 99 % confidence that the true $\beta$ is within this interval. Considering the hypothesis test $H_0: \beta_{BMI} = 0$ against $H_1: \beta_{BMI} \neq 0$, we can get information about the p-value for this test through the confidence interval. Since the confidence interval does not contain the null hypothesis value $\beta_{BMI}=0$, we know that the p-value is less than the significance level $\alpha = 0.01$. Equivalently, the hypothesis test is statistically significant.   
 
@@ -120,7 +120,7 @@ new=data.frame(SEX=1,AGE=56,CURSMOKE=1,BMI=89/1.75^2,TOTCHOL=200,BPMEDS=0)
 
 In order to make a guess for his $-\frac{1}{\sqrt{SYSBP}}$, we insert these data into the equation for the multiple linear regression modelA, with the estimated values $\hat{\beta_j}$ from task a. We then get the response value $-0.08667$, which is our best guess. If we have that $y=-\frac{1}{\sqrt{SYSBP}}$, we have that the inverse function is equal to $SYSBP=\frac{1}{y^2}$. Thus, when using that the best guess for $y$ is $-0.08667$, we get that the best guess for the systolic blood pressure of this person is $SYSBP = \frac{1}{(-0.08667)^2} = 133.1$.
 
-To make a 90 % prediction interval for this persons systolic blood pressure SYSBP, we can construct a prediction interval for the response of ´modelA´ around our best guess, and then transform the limits of the interval by the inverse function of $-\frac{1}{\sqrt{SYSBP}}$:
+To make a 90 % prediction interval for this person's systolic blood pressure SYSBP, we can construct a prediction interval for the response of `modelA` around our best guess, and then transform the limits of the interval by the inverse function of $-\frac{1}{\sqrt{SYSBP}}$:
 
 ```{r}
 predict(modelA,newdata=new,interval ="prediction",type="response",level=0.90)
