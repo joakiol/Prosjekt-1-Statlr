@@ -3,7 +3,7 @@
 .Rapp.history
 
 #pdf files
-*.pdf
+
 
 # Session Data files
 .RData
